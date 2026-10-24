@@ -1,0 +1,242 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<title>AI Team Week 7</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: fantasy-app lineup screen — header, starters list (pill · avatar · 3-line info · score column), alternates list, notes. Single dark look by choice. */
+:root {
+  color-scheme: dark;
+  --bg: #0d1226;
+  --fg: #ffffff;
+  --sub: #a9b0c6;
+  --dim: #6b7290;
+  --teal: #2ee6b6;
+  --good: #3ee07f;
+  --mid: #ff9a3c;
+  --bad: #ff5a6e;
+  --ques: #f2d43b;
+  --qb: #ff7eb0; --rb: #7ef0c6; --wr: #5ec8f5; --te: #ffad5c; --k: #bcaeff; --def: #c8694c; --alt: #c7cbd8;
+  --pill-ink: #0d1226;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 22px 36px;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 620px; margin: 0 auto; }
+
+.top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 26px; }
+.top h1 { margin: 0; font-size: 24px; font-weight: 700; color: #dfe4f5; display: flex; align-items: center; gap: 8px; }
+.top p { margin: 4px 0 0; color: var(--sub); font-size: 15px; }
+.week { display: flex; align-items: center; gap: 14px; color: var(--teal); font-weight: 700; font-size: 19px; padding-top: 2px; white-space: nowrap; }
+.week svg { width: 12px; height: 18px; }
+
+h2.sec { margin: 34px 0 14px; font-size: 23px; font-weight: 700; color: #dfe4f5; }
+
+.list { display: flex; flex-direction: column; }
+.row { display: grid; grid-template-columns: 70px 54px minmax(0,1fr) auto; align-items: center; column-gap: 14px; padding: 14px 0; }
+.pill { height: 46px; border-radius: 12px; display: grid; place-items: center; font-weight: 700; font-size: 17px; color: var(--pill-ink); letter-spacing: .02em; }
+.p-QB { background: var(--qb); } .p-RB { background: var(--rb); } .p-WR { background: var(--wr); }
+.p-TE { background: var(--te); } .p-K { background: var(--k); } .p-DEF { background: var(--def); }
+.p-WRT { background: linear-gradient(90deg, var(--wr) 0 34%, var(--rb) 34% 66%, var(--te) 66%); }
+.p-ALT { background: var(--alt); }
+
+.av { position: relative; width: 54px; height: 54px; }
+.av .face { width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 17px; color: #fff; }
+.av .badge { position: absolute; right: -4px; bottom: -3px; min-width: 24px; height: 18px; padding: 0 4px; border-radius: 9px; font-size: 9.5px; font-weight: 800; display: grid; place-items: center; color: #fff; border: 2px solid var(--bg); }
+
+.info { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.l1 { font-size: 21px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.l1 .pos { font-size: 15px; font-weight: 500; }
+.l1 .tm { font-size: 15px; font-weight: 400; color: var(--sub); }
+.c-QB { color: var(--qb); } .c-RB { color: var(--rb); } .c-WR { color: var(--wr); } .c-TE { color: var(--te); } .c-K { color: var(--k); } .c-DEF { color: var(--def); }
+.l2 { font-size: 15.5px; color: var(--sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+.l2 b { color: #e6e9f4; font-weight: 700; }
+.l2 .sep { color: var(--dim); margin: 0 4px; }
+.l3 { font-size: 15px; color: var(--sub); display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; }
+.l3 .opp { overflow: hidden; text-overflow: ellipsis; }
+.good { color: var(--good); } .mid { color: var(--mid); } .bad { color: var(--bad); }
+.chev { flex: none; width: 17px; height: 17px; border-radius: 50%; background: #2a3150; display: grid; place-items: center; }
+.chev svg { width: 6px; height: 9px; }
+.ques { color: var(--ques); font-weight: 600; font-size: 14px; letter-spacing: .02em; }
+.l4 { font-size: 13px; font-weight: 600; }
+.moon { width: 14px; height: 14px; flex: none; }
+
+.score { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 14px; font-variant-numeric: tabular-nums; }
+.score .live { font-size: 22px; font-weight: 700; line-height: 1; color: #e6e9f4; }
+.score .proj { font-size: 16px; color: #c9cee0; }
+
+.tally { display: flex; justify-content: space-between; align-items: center; gap: 12px; background: #161d38; border-radius: 14px; padding: 14px 18px; margin: -8px 0 10px; }
+.tally .lbl { color: var(--sub); font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+.tally .pts { font-size: 30px; font-weight: 800; font-variant-numeric: tabular-nums; color: var(--fg); line-height: 1; }
+.tally .of { color: var(--sub); font-size: 14px; text-align: right; line-height: 1.4; }
+.tally .of b { color: var(--teal); }
+.score .live.has { color: var(--teal); }
+.locked .blur { filter: blur(7px); opacity: .7; user-select: none; }
+.locked .face.hide { background: #232a45; color: #4b5375; filter: blur(3px); }
+.locked .reveal { color: var(--teal); font-weight: 600; gap: 7px; }
+.lock { width: 13px; height: 13px; flex: none; }
+.row:not(.locked) { animation: reveal .6s ease-out; }
+@keyframes reveal { from { filter: blur(8px); opacity: .4; } to { filter: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .row:not(.locked) { animation: none; } }
+.alt .info, .alt .av { opacity: .55; }
+.alt .l1 { color: #c9cee0; }
+
+.notes { margin-top: 30px; border-top: 1px solid #222a47; padding-top: 20px; display: flex; flex-direction: column; gap: 10px; color: var(--sub); font-size: 14.5px; line-height: 1.5; }
+.notes b { color: #e6e9f4; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--dim); }
+.legend span::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; background: currentColor; }
+
+@media (max-width: 480px) {
+  .row { grid-template-columns: 58px 44px minmax(0,1fr) auto; column-gap: 10px; }
+  .pill { height: 40px; font-size: 15px; border-radius: 10px; }
+  .av, .av .face { width: 44px; height: 44px; }
+  .av .face { font-size: 15px; }
+  .l1 { font-size: 17.5px; } .l1 .pos, .l1 .tm { font-size: 13px; }
+  .l2, .l3 { font-size: 13px; }
+  .score .live { font-size: 18px; } .score .proj { font-size: 14px; }
+  .top h1 { font-size: 21px; } .top p { font-size: 13.5px; } .week { font-size: 17px; }
+}
+@media (max-width: 370px) { .av { display: none; } .row { grid-template-columns: 54px minmax(0,1fr) auto; } }
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>Starters
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dfe4f5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>
+      </h1>
+      <p>AI Team · No Fun League</p>
+    </div>
+    <div class="week">
+      <svg viewBox="0 0 12 18" aria-hidden="true"><path d="M10 2L3 9l7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Week 7
+      <svg viewBox="0 0 12 18" aria-hidden="true"><path d="M2 2l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
+
+  <div class="tally" id="tally" hidden></div>
+  <div class="list" id="starters"></div>
+</div>
+
+<script>
+const TEAM = {
+  ARI:"#97233f", ATL:"#a71930", BAL:"#241773", BUF:"#00338d", CAR:"#0085ca", CHI:"#0b162a", CIN:"#fb4f14", CLE:"#311d00",
+  DAL:"#003594", DEN:"#fb4f14", DET:"#0076b6", GB:"#203731", HOU:"#03202f", IND:"#002c5f", JAX:"#006778", KC:"#e31837",
+  LAC:"#0080c6", LAR:"#003594", LV:"#a5acaf", MIA:"#008e97", MIN:"#4f2683", NE:"#c60c30", NO:"#d3bc8d", NYG:"#0b2265",
+  NYJ:"#125740", PHI:"#004c54", PIT:"#ffb612", SEA:"#002244", SF:"#aa0000", TB:"#d50a0a", TEN:"#4b92db", WAS:"#5a1414"
+};
+/*DATA*/
+const STARTERS = [
+ {
+  "slot": "QB",
+  "hidden": true
+ },
+ {
+  "slot": "RB",
+  "hidden": true
+ },
+ {
+  "slot": "RB",
+  "hidden": true
+ },
+ {
+  "slot": "WR",
+  "name": "DeMario Douglas",
+  "pos": "WR",
+  "team": "NE",
+  "bye": 11,
+  "proj": 8.6,
+  "ceil": 16.7,
+  "time": "Thu 6:15 PM",
+  "kick": "2026-10-23T00:15:00Z",
+  "ha": "@",
+  "opp": "CHI",
+  "rank": 16,
+  "night": true,
+  "actual": 5.3
+ },
+ {
+  "slot": "WR",
+  "hidden": true
+ },
+ {
+  "slot": "WRT",
+  "hidden": true
+ },
+ {
+  "slot": "WRT",
+  "hidden": true
+ },
+ {
+  "slot": "WRT",
+  "hidden": true
+ },
+ {
+  "slot": "K",
+  "hidden": true
+ },
+ {
+  "slot": "DEF",
+  "hidden": true
+ }
+];
+const ALTS = [];
+const META = {"total": 8.6, "asof": "Checked Sat 10/24, 11:34AM MT: all players are still free agents."};
+/*END*/
+const ord = n => { const s=["th","st","nd","rd"], v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); };
+const tier = r => r >= 20 ? "good" : r >= 11 ? "mid" : "bad";
+const ini = n => n.split(/\s+/).map(w => (w.replace(/[^A-Za-z]/g,"")[0]||"")).join("").slice(0,2).toUpperCase();
+const chev = '<span class="chev"><svg viewBox="0 0 6 9"><path d="M1 1l3.5 3.5L1 8" fill="none" stroke="#9aa3c4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
+const moon = '<svg class="moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" fill="#f2d43b"/></svg>';
+// Before kickoff a row shows only its slot pill and a blurred placeholder; the player's
+// real details are rendered only once their game has started.
+const locked = p => p.hidden || (p.kick && Date.now() < Date.parse(p.kick));
+const lockedRow = p => `
+  <div class="row locked">
+    <div class="pill p-${p.slot}">${p.slot}</div>
+    <div class="av"><div class="face hide">?</div></div>
+    <div class="info">
+      <div class="l1 blur">Hidden Player <span class="pos">POS</span><span class="tm"> - TEAM (0)</span></div>
+      <div class="l3 blur">Sun 00:00 PM vs TEAM (00th)</div>
+    </div>
+    <div class="score blur"><span class="live">-</span></div>
+  </div>`;
+const row = p => locked(p) ? lockedRow(p) : `
+  <div class="row">
+    <div class="pill p-${p.slot}">${p.slot}</div>
+    <div class="av">
+      <div class="face" style="background:${TEAM[p.team]}">${p.pos==="DEF" ? p.team : ini(p.name)}</div>
+      ${p.pos==="DEF" ? "" : `<div class="badge" style="background:${TEAM[p.team]}">${p.team}</div>`}
+    </div>
+    <div class="info">
+      <div class="l1">${p.name} <span class="pos c-${p.pos}">${p.pos}</span><span class="tm"> - ${p.team} (${p.bye})</span></div>
+      <div class="l3">${p.time} <span class="opp ${tier(p.rank)}">${p.ha} ${p.opp} (${ord(p.rank)})</span>${p.night ? moon : ""}${chev}${p.ques ? '<span class="ques">' + (p.inj || "QUES") + '</span>' : ""}${p.taken ? '<span class="ques" style="color:var(--bad)">ROSTERED</span>' : ""}${p.event ? '<span class="ques" style="color:var(--teal)">' + p.event + '</span>' : ""}</div>
+      ${p.bonus ? `<div class="l4 c-${p.pos}">${p.bonus}</div>` : ""}
+    </div>
+    <div class="score"><span class="live${p.actual!=null?" has":""}">${p.actual!=null ? p.actual.toFixed(2) : "-"}</span></div>
+  </div>`;
+let lastKey = "";
+function render() {
+  const key = STARTERS.map(p => locked(p) ? 1 : 0).join("");
+  if (key === lastKey) return;
+  lastKey = key;
+  document.getElementById("starters").innerHTML = STARTERS.map(row).join("");
+  const done = STARTERS.filter(p => !locked(p) && p.actual != null);
+  const t = document.getElementById("tally");
+  if (done.length) {
+    const tot = done.reduce((s, p) => s + p.actual, 0);
+    const label = done.length === STARTERS.length ? "Final" : (done.length === 1 && STARTERS.find(p => !locked(p)).time.startsWith("Thu") ? "After TNF" : done.length + " of " + STARTERS.length + " played");
+    t.innerHTML = `<div><div class="lbl">${label}</div><div class="pts">${tot.toFixed(2)}</div></div><div class="of">${STARTERS.length - done.length ? (STARTERS.length - done.length) + " players left" : ""}</div>`;
+    t.hidden = false;
+  }
+}
+render();
+setInterval(render, 15000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) render(); });
+</script>
+
+</body></html>
