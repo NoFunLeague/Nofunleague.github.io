@@ -132,8 +132,20 @@ const TEAM = {
 /*DATA*/
 const STARTERS = [
  {
+  "pid": "11563",
   "slot": "QB",
-  "hidden": true
+  "name": "Bo Nix",
+  "pos": "QB",
+  "team": "DEN",
+  "bye": 10,
+  "proj": 18.9,
+  "ceil": 25.6,
+  "time": "Sun 2:05 PM",
+  "kick": "2026-10-25T20:05:00Z",
+  "ha": "@",
+  "opp": "ARI",
+  "rank": 29,
+  "actual": 0.8
  },
  {
   "pid": "4147",
@@ -149,11 +161,23 @@ const STARTERS = [
   "ha": "@",
   "opp": "BAL",
   "rank": 6,
-  "actual": -0.2
+  "actual": 7.6
  },
  {
+  "pid": "8122",
   "slot": "RB",
-  "hidden": true
+  "name": "Zonovan Knight",
+  "pos": "RB",
+  "team": "ARI",
+  "bye": 14,
+  "proj": 7.7,
+  "ceil": 11.9,
+  "time": "Sun 2:05 PM",
+  "kick": "2026-10-25T20:05:00Z",
+  "ha": "vs",
+  "opp": "DEN",
+  "rank": 23,
+  "actual": 0.0
  },
  {
   "pid": "9501",
@@ -190,7 +214,7 @@ const STARTERS = [
   "ha": "vs",
   "opp": "NYG",
   "rank": 17,
-  "actual": 5.85
+  "actual": 10.75
  },
  {
   "pid": "4993",
@@ -206,7 +230,8 @@ const STARTERS = [
   "ha": "@",
   "opp": "BAL",
   "rank": 8,
-  "actual": 0.0
+  "event": "Backdoor +2",
+  "actual": 9.85
  },
  {
   "slot": "WRT",
@@ -226,7 +251,7 @@ const STARTERS = [
   "ha": "@",
   "opp": "BAL",
   "rank": 19,
-  "actual": 0.0
+  "actual": 5.0
  },
  {
   "pid": "CAR",
@@ -242,11 +267,11 @@ const STARTERS = [
   "ha": "vs",
   "opp": "TB",
   "rank": 31,
-  "actual": 8.0
+  "actual": -3.0
  }
 ];
 const ALTS = [];
-const META = {"total": 49.8, "asof": "Checked Sun 10/25, 11:36AM MT: all players are still free agents.", "season": "2026", "week": 7, "events": true, "scoring": {"sack": 1.0, "bonus_rec_te": 0.25, "fgm_yds": 0.1, "pass_int": -2.0, "pts_allow_0": 5.0, "pass_2pt": 2.0, "yds_allow_450_499": -5.0, "st_td": 6.0, "rec_td": 6.0, "yds_allow_400_449": -3.0, "xpmiss": -1.0, "rush_td": 6.0, "yds_allow_550p": -7.0, "yds_allow_350_399": -1.0, "rec_2pt": 2.0, "st_fum_rec": 1.0, "fgmiss": -1.0, "ff": 1.0, "rec": 1.0, "yds_allow_200_299": 2.0, "pts_allow_14_20": 1.0, "int": 2.0, "def_st_fum_rec": 1.0, "fum_lost": -2.0, "pts_allow_1_6": 4.0, "yds_allow_500_549": -6.0, "xpm": 1.0, "rush_2pt": 2.0, "fum_rec": 2.0, "def_st_td": 6.0, "def_td": 6.0, "safe": 2.0, "pass_yd": 0.04, "blk_kick": 2.0, "pass_td": 4.0, "yds_allow_100_199": 3.0, "rush_yd": 0.1, "yds_allow_0_100": 5.0, "pts_allow_28_34": -1.0, "pts_allow_35p": -4.0, "fum_rec_td": 6.0, "rec_yd": 0.1, "def_st_ff": 1.0, "pts_allow_7_13": 3.0, "st_ff": 1.0}};
+const META = {"total": 76.4, "asof": "Checked Sun 10/25, 2:07PM MT: all players are still free agents.", "season": "2026", "week": 7, "events": true, "scoring": {"sack": 1.0, "bonus_rec_te": 0.25, "fgm_yds": 0.1, "pass_int": -2.0, "pts_allow_0": 5.0, "pass_2pt": 2.0, "yds_allow_450_499": -5.0, "st_td": 6.0, "rec_td": 6.0, "yds_allow_400_449": -3.0, "xpmiss": -1.0, "rush_td": 6.0, "yds_allow_550p": -7.0, "yds_allow_350_399": -1.0, "rec_2pt": 2.0, "st_fum_rec": 1.0, "fgmiss": -1.0, "ff": 1.0, "rec": 1.0, "yds_allow_200_299": 2.0, "pts_allow_14_20": 1.0, "int": 2.0, "def_st_fum_rec": 1.0, "fum_lost": -2.0, "pts_allow_1_6": 4.0, "yds_allow_500_549": -6.0, "xpm": 1.0, "rush_2pt": 2.0, "fum_rec": 2.0, "def_st_td": 6.0, "def_td": 6.0, "safe": 2.0, "pass_yd": 0.04, "blk_kick": 2.0, "pass_td": 4.0, "yds_allow_100_199": 3.0, "rush_yd": 0.1, "yds_allow_0_100": 5.0, "pts_allow_28_34": -1.0, "pts_allow_35p": -4.0, "fum_rec_td": 6.0, "rec_yd": 0.1, "def_st_ff": 1.0, "pts_allow_7_13": 3.0, "st_ff": 1.0}};
 /*END*/
 const ord = n => { const s=["th","st","nd","rd"], v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); };
 const tier = r => r >= 20 ? "good" : r >= 11 ? "mid" : "bad";
