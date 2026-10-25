@@ -1,0 +1,154 @@
+<title>AI Team vs Josh</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: fantasy-app matchup screen — score header, then one row per slot: left team | slot pill | right team. Single dark look by choice. */
+:root {
+  color-scheme: dark;
+  --bg: #0d1226; --card: #141a33; --line: #222a47;
+  --fg: #ffffff; --sub: #a9b0c6; --dim: #6b7290; --teal: #2ee6b6;
+  --good: #3ee07f; --mid: #ff9a3c; --bad: #ff5a6e; --ques: #f2d43b;
+  --qb: #ff7eb0; --rb: #7ef0c6; --wr: #5ec8f5; --te: #ffad5c; --k: #bcaeff; --def: #c8694c;
+  --font: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font); -webkit-font-smoothing: antialiased;
+  padding-left: max(12px, env(safe-area-inset-left, 0px)); padding-right: max(12px, env(safe-area-inset-right, 0px)); padding-block: 18px 32px; }
+.wrap { max-width: 640px; margin: 0 auto; }
+.league { text-align: center; font-weight: 800; font-size: 20px; margin-bottom: 14px; }
+.league small { display: block; color: var(--sub); font-weight: 500; font-size: 13px; margin-top: 2px; }
+.board { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; background: var(--card); border-radius: 16px; padding: 14px 14px; margin-bottom: 8px; }
+.team { min-width: 0; }
+.team.r { text-align: right; }
+.team .nm { font-weight: 700; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.team .own { color: var(--sub); font-size: 12px; margin-top: 2px; }
+.team .tot { font-size: 30px; font-weight: 800; font-variant-numeric: tabular-nums; margin-top: 6px; line-height: 1; }
+.team .left { color: var(--dim); font-size: 12px; margin-top: 4px; }
+.team.lead .tot { color: var(--teal); }
+.vs { color: var(--dim); font-weight: 800; font-size: 13px; }
+.fresh { text-align: center; color: var(--dim); font-size: 11.5px; margin: 0 0 10px; min-height: 14px; }
+
+.row { display: grid; grid-template-columns: minmax(0,1fr) 52px 46px 52px minmax(0,1fr); align-items: start; column-gap: 6px; padding: 14px 2px; border-bottom: 1px solid var(--line); }
+.who { min-width: 0; }
+.who.r { text-align: right; }
+.who .n { font-weight: 700; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.who .m { font-size: 12px; color: var(--sub); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.who .g { font-size: 12px; color: var(--sub); margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.who .s { font-size: 12px; color: var(--sub); margin-top: 4px; line-height: 1.35; }
+.pts { text-align: center; font-variant-numeric: tabular-nums; }
+.pts .a { font-size: 19px; font-weight: 800; line-height: 1.1; }
+.pts .p { font-size: 11.5px; color: var(--dim); margin-top: 3px; }
+.pts.win .a { color: var(--teal); }
+.pill { height: 40px; border-radius: 10px; display: grid; place-items: center; font-weight: 800; font-size: 13px; color: #0d1226; }
+.p-QB { background: var(--qb); } .p-RB { background: var(--rb); } .p-WR { background: var(--wr); }
+.p-TE { background: var(--te); } .p-K { background: var(--k); } .p-DEF { background: var(--def); }
+.p-WRT { background: linear-gradient(90deg, var(--wr) 0 34%, var(--rb) 34% 66%, var(--te) 66%); }
+.c-QB { color: var(--qb); } .c-RB { color: var(--rb); } .c-WR { color: var(--wr); } .c-TE { color: var(--te); } .c-K { color: var(--k); } .c-DEF { color: var(--def); }
+.good { color: var(--good); } .mid { color: var(--mid); } .bad { color: var(--bad); }
+.tag { font-size: 10px; font-weight: 800; margin-left: 4px; }
+.tag.q { color: var(--ques); } .tag.e { color: var(--teal); }
+.blur { filter: blur(6px); opacity: .6; user-select: none; }
+@media (max-width: 420px) {
+  .row { grid-template-columns: minmax(0,1fr) 44px 38px 44px minmax(0,1fr); column-gap: 4px; }
+  .who .n { font-size: 14px; } .pts .a { font-size: 16px; } .pill { font-size: 11px; height: 34px; }
+  .team .tot { font-size: 26px; }
+}
+</style>
+
+<div class="wrap">
+  <div class="league">🐶 No Fun League 🐶<small id="sub">Week 7 · Free agent showdown · <a href="./" style="color:var(--teal)">AI lineup</a></small></div>
+  <div class="board">
+    <div class="team" id="tL"></div>
+    <div class="vs">VS</div>
+    <div class="team r" id="tR"></div>
+  </div>
+  <div class="fresh" id="fresh"></div>
+  <div id="rows"></div>
+</div>
+
+<script>
+/*DATA*/
+const LEFT = {"name": "AI Team", "owner": "the machine", "players": [{"slot": "QB", "hidden": true}, {"pid": "4147", "slot": "RB", "name": "Samaje Perine", "pos": "RB", "team": "CIN", "bye": 6, "proj": 5.8, "ceil": 11.2, "time": "Sun 11:00 AM", "kick": "2026-10-25T17:00:00Z", "ha": "@", "opp": "BAL", "rank": 6, "actual": -0.2}, {"slot": "RB", "hidden": true}, {"pid": "9501", "slot": "WR", "name": "DeMario Douglas", "pos": "WR", "team": "NE", "bye": 11, "proj": 8.6, "ceil": 16.7, "time": "Thu 6:15 PM", "kick": "2026-10-23T00:15:00Z", "ha": "@", "opp": "CHI", "rank": 16, "night": true, "actual": 5.3}, {"slot": "WR", "hidden": true}, {"pid": "5001", "slot": "WRT", "name": "Dalton Schultz", "pos": "TE", "team": "HOU", "bye": 8, "proj": 9.4, "ceil": 17.8, "time": "Sun 11:00 AM", "kick": "2026-10-25T17:00:00Z", "ha": "vs", "opp": "NYG", "rank": 17, "actual": 5.85}, {"pid": "4993", "slot": "WRT", "name": "Mike Gesicki", "pos": "TE", "team": "CIN", "bye": 6, "proj": 8.9, "ceil": 15.7, "time": "Sun 11:00 AM", "kick": "2026-10-25T17:00:00Z", "ha": "@", "opp": "BAL", "rank": 8, "actual": 0.0}, {"slot": "WRT", "hidden": true}, {"pid": "7839", "slot": "K", "name": "Evan McPherson", "pos": "K", "team": "CIN", "bye": 6, "proj": 9.6, "ceil": 14.7, "time": "Sun 11:00 AM", "kick": "2026-10-25T17:00:00Z", "ha": "@", "opp": "BAL", "rank": 19, "actual": 0.0}, {"pid": "CAR", "slot": "DEF", "name": "Carolina Panthers", "pos": "DEF", "team": "CAR", "bye": 5, "proj": 7.5, "ceil": 18.5, "time": "Sun 11:00 AM", "kick": "2026-10-25T17:00:00Z", "ha": "vs", "opp": "TB", "rank": 31, "actual": 8.0}]};
+const RIGHT = {"name": "Department of Taking the Under", "owner": "Josh", "players": [{"pid": "4892", "slot": "QB", "name": "Baker Mayfield", "pos": "QB", "team": "TB", "ha": "@", "opp": "CAR", "kick": "2026-10-25T17:00:00Z", "rank": null, "time": "Sun 11:00 AM", "proj": 14.27, "actual": 1.02}, {"pid": "8122", "slot": "RB", "name": "Zonovan Knight", "pos": "RB", "team": "ARI", "ha": "vs", "opp": "DEN", "kick": "2026-10-25T20:05:00Z", "rank": null, "time": "Sun 2:05 PM", "proj": 7.68}, {"pid": "12048", "slot": "RB", "name": "George Holani", "pos": "RB", "team": "SEA", "ha": "vs", "opp": "KC", "kick": "2026-10-26T00:20:00Z", "rank": null, "time": "Sun 6:20 PM", "proj": 6.99}, {"pid": "11610", "slot": "WR", "name": "Malik Washington", "pos": "WR", "team": "MIA", "ha": "@", "opp": "NYJ", "kick": "2026-10-25T17:00:00Z", "rank": null, "time": "Sun 11:00 AM", "proj": 9.65, "actual": 5.0}, {"pid": "8126", "slot": "WR", "name": "Wan'Dale Robinson", "pos": "WR", "team": "TEN", "ha": "vs", "opp": "CLE", "kick": "2026-10-25T17:00:00Z", "rank": null, "time": "Sun 11:00 AM", "proj": 10.26, "actual": 0.0}, {"pid": "13150", "slot": "WRT", "name": "Darius Cooper", "pos": "WR", "team": "PHI", "ha": "vs", "opp": "DAL", "kick": "2026-10-27T00:15:00Z", "rank": null, "time": "Mon 6:15 PM", "proj": 9.6}, {"pid": "4454", "slot": "WRT", "name": "Kendrick Bourne", "pos": "WR", "team": "ARI", "ha": "vs", "opp": "DEN", "kick": "2026-10-25T20:05:00Z", "rank": null, "time": "Sun 2:05 PM", "proj": 7.71}, {"pid": "5012", "slot": "WRT", "name": "Mark Andrews", "pos": "TE", "team": "BAL", "ha": "vs", "opp": "CIN", "kick": "2026-10-25T17:00:00Z", "rank": null, "time": "Sun 11:00 AM", "proj": 10.06, "actual": 1.85}, {"pid": "11539", "slot": "K", "name": "Jake Bates", "pos": "K", "team": "DET", "ha": "vs", "opp": "GB", "kick": "2026-10-25T20:25:00Z", "rank": null, "time": "Sun 2:25 PM", "proj": 9.36}, {"pid": "DAL", "slot": "DEF", "name": "Dallas Cowboys", "pos": "DEF", "team": "DAL", "ha": "@", "opp": "PHI", "kick": "2026-10-27T00:15:00Z", "rank": null, "time": "Mon 6:15 PM", "proj": 7.87}]};
+const META = {"season": "2026", "week": 7, "events": true, "scoring": {"sack": 1.0, "bonus_rec_te": 0.25, "fgm_yds": 0.1, "pass_int": -2.0, "pts_allow_0": 5.0, "pass_2pt": 2.0, "yds_allow_450_499": -5.0, "st_td": 6.0, "rec_td": 6.0, "yds_allow_400_449": -3.0, "xpmiss": -1.0, "rush_td": 6.0, "yds_allow_550p": -7.0, "yds_allow_350_399": -1.0, "rec_2pt": 2.0, "st_fum_rec": 1.0, "fgmiss": -1.0, "ff": 1.0, "rec": 1.0, "yds_allow_200_299": 2.0, "pts_allow_14_20": 1.0, "int": 2.0, "def_st_fum_rec": 1.0, "fum_lost": -2.0, "pts_allow_1_6": 4.0, "yds_allow_500_549": -6.0, "xpm": 1.0, "rush_2pt": 2.0, "fum_rec": 2.0, "def_st_td": 6.0, "def_td": 6.0, "safe": 2.0, "pass_yd": 0.04, "blk_kick": 2.0, "pass_td": 4.0, "yds_allow_100_199": 3.0, "rush_yd": 0.1, "yds_allow_0_100": 5.0, "pts_allow_28_34": -1.0, "pts_allow_35p": -4.0, "fum_rec_td": 6.0, "rec_yd": 0.1, "def_st_ff": 1.0, "pts_allow_7_13": 3.0, "st_ff": 1.0}};
+/*END*/
+const ord = n => { const s=["th","st","nd","rd"], v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); };
+const tier = r => r >= 20 ? "good" : r >= 11 ? "mid" : "bad";
+const short = n => { const parts = n.split(" "); return parts.length > 1 && !/(Team|Panthers|Titans|Cowboys|Saints)$/.test(n) ? parts[0][0] + ". " + parts.slice(1).join(" ") : n; };
+const fmt = x => (x == null ? "-" : x.toFixed(2));
+let liveAt = null, STATS = {};
+
+const scoreOf = (s, pos) => {
+  let pts = 0;
+  for (const [k, v] of Object.entries(s)) if (typeof v === "number" && META.scoring[k]) pts += v * META.scoring[k];
+  if (META.events && pos === "TE" && ((s.rec_td || 0) + (s.rush_td || 0)) > 0) pts += 2;
+  if (META.events && pos === "K" && (s.fgm_50p || s.fgm_50_59 || s.fgm_60p)) pts += 2;
+  return Math.round(pts * 100) / 100;
+};
+const n0 = v => Math.round(v || 0);
+function statLine(s, pos) {
+  if (!s) return "";
+  const out = [];
+  if (pos === "QB") {
+    if (s.pass_att) out.push(`${n0(s.pass_cmp)}/${n0(s.pass_att)} CMP, ${n0(s.pass_yd)} YD, ${n0(s.pass_td)} TD` + (s.pass_int ? `, ${n0(s.pass_int)} INT` : ""));
+    if (s.rush_att) out.push(`${n0(s.rush_att)} CAR, ${n0(s.rush_yd)} YD` + (s.rush_td ? `, ${n0(s.rush_td)} TD` : ""));
+  } else if (pos === "RB" || pos === "WR" || pos === "TE") {
+    if (s.rush_att) out.push(`${n0(s.rush_att)} CAR, ${n0(s.rush_yd)} YD` + (s.rush_td ? `, ${n0(s.rush_td)} TD` : ""));
+    if (s.rec_tgt || s.rec) out.push(`${n0(s.rec)}/${n0(s.rec_tgt)} REC, ${n0(s.rec_yd)} YD` + (s.rec_td ? `, ${n0(s.rec_td)} TD` : ""));
+  } else if (pos === "K") {
+    if (s.fga || s.xpa) out.push(`${n0(s.fgm)}/${n0(s.fga)} FG, ${n0(s.xpm)}/${n0(s.xpa)} XP`);
+  } else if (pos === "DEF") {
+    if (s.pts_allow != null) out.push(`${n0(s.pts_allow)} PA, ${n0(s.sack)} SCK, ${n0(s.int)} INT, ${n0(s.fum_rec)} FR`);
+  }
+  return out.join(", ");
+}
+const started = p => !p.hidden && (!p.kick || Date.now() >= Date.parse(p.kick));
+function side(p, r) {
+  if (!p || p.hidden) return `<div class="who${r ? " r" : ""} blur"><div class="n">Hidden Player</div><div class="m">POS • TEAM</div><div class="g">Sun 00:00 PM vs TEAM</div></div>`;
+  const s = STATS[p.pid];
+  const line = started(p) ? statLine(s, p.pos) : "";
+  return `<div class="who${r ? " r" : ""}">
+    <div class="n">${short(p.name)}${p.inj ? `<span class="tag q">${p.inj}</span>` : ""}</div>
+    <div class="m"><span class="c-${p.pos}">${p.pos}</span> • ${p.team}</div>
+    <div class="g">${p.time.replace(/^\w+ /, "").replace(" AM", "a").replace(" PM", "p")} <span class="${p.rank ? tier(p.rank) : ""}">${p.ha} ${p.opp}${p.rank ? " (" + ord(p.rank) + ")" : ""}</span></div>
+    ${line ? `<div class="s">${line}</div>` : ""}
+  </div>`;
+}
+function ptsCell(p, other) {
+  if (!p || p.hidden) return `<div class="pts blur"><div class="a">00.00</div><div class="p">00.00</div></div>`;
+  const a = p.actual, o = other && !other.hidden ? other.actual : null;
+  const win = a != null && o != null && a > o;
+  return `<div class="pts${win ? " win" : ""}"><div class="a">${started(p) ? fmt(a ?? 0) : "-"}</div><div class="p">${p.proj != null ? p.proj.toFixed(2) : ""}</div></div>`;
+}
+const total = T => T.players.reduce((s, p) => s + (!p.hidden && p.actual != null ? p.actual : 0), 0);
+const left = T => T.players.filter(p => p.hidden || !started(p)).length;
+function render() {
+  const L = total(LEFT), R = total(RIGHT);
+  const head = (T, tot, r) => `<div class="nm">${T.name}</div><div class="own">${T.owner}</div><div class="tot">${tot.toFixed(2)}</div><div class="left">${left(T)} yet to play</div>`;
+  const tL = document.getElementById("tL"), tR = document.getElementById("tR");
+  tL.innerHTML = head(LEFT, L); tR.innerHTML = head(RIGHT, R, true);
+  tL.classList.toggle("lead", L > R); tR.classList.toggle("lead", R > L);
+  document.getElementById("fresh").textContent = liveAt ? `Live scores · updated ${liveAt.toLocaleTimeString([], {hour: "numeric", minute: "2-digit"})}` : "";
+  let html = "";
+  for (let i = 0; i < Math.max(LEFT.players.length, RIGHT.players.length); i++) {
+    const a = LEFT.players[i], b = RIGHT.players[i];
+    const slot = (a && a.slot) || (b && b.slot);
+    html += `<div class="row">${side(a, false)}${ptsCell(a, b)}<div class="pill p-${slot}">${slot}</div>${ptsCell(b, a)}${side(b, true)}</div>`;
+  }
+  document.getElementById("rows").innerHTML = html;
+}
+async function refresh() {
+  const all = [...LEFT.players, ...RIGHT.players].filter(p => !p.hidden && p.pid);
+  try {
+    const r = await fetch(`https://api.sleeper.app/v1/stats/nfl/regular/${META.season}/${META.week}`, { cache: "no-store" });
+    if (!r.ok) return;
+    STATS = await r.json();
+    for (const p of all) if (STATS[p.pid]) p.actual = scoreOf(STATS[p.pid], p.pos);
+    liveAt = new Date();
+  } catch (e) { /* keep the last published scores */ }
+  render();
+}
+render();
+refresh();
+setInterval(() => { if (!document.hidden) refresh(); }, 60000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) refresh(); });
+</script>
