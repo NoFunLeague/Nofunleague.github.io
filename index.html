@@ -136,6 +136,7 @@ const STARTERS = [
   "hidden": true
  },
  {
+  "pid": "4147",
   "slot": "RB",
   "name": "Samaje Perine",
   "pos": "RB",
@@ -155,6 +156,7 @@ const STARTERS = [
   "hidden": true
  },
  {
+  "pid": "9501",
   "slot": "WR",
   "name": "DeMario Douglas",
   "pos": "WR",
@@ -175,6 +177,7 @@ const STARTERS = [
   "hidden": true
  },
  {
+  "pid": "5001",
   "slot": "WRT",
   "name": "Dalton Schultz",
   "pos": "TE",
@@ -187,9 +190,10 @@ const STARTERS = [
   "ha": "vs",
   "opp": "NYG",
   "rank": 17,
-  "actual": 4.3
+  "actual": 5.85
  },
  {
+  "pid": "4993",
   "slot": "WRT",
   "name": "Mike Gesicki",
   "pos": "TE",
@@ -209,6 +213,7 @@ const STARTERS = [
   "hidden": true
  },
  {
+  "pid": "7839",
   "slot": "K",
   "name": "Evan McPherson",
   "pos": "K",
@@ -224,6 +229,7 @@ const STARTERS = [
   "actual": 0.0
  },
  {
+  "pid": "CAR",
   "slot": "DEF",
   "name": "Carolina Panthers",
   "pos": "DEF",
@@ -240,7 +246,7 @@ const STARTERS = [
  }
 ];
 const ALTS = [];
-const META = {"total": 49.8, "asof": "Checked Sun 10/25, 11:25AM MT: all players are still free agents."};
+const META = {"total": 49.8, "asof": "Checked Sun 10/25, 11:27AM MT: all players are still free agents.", "season": "2026", "week": 7, "events": true, "scoring": {"sack": 1.0, "bonus_rec_te": 0.25, "fgm_yds": 0.1, "pass_int": -2.0, "pts_allow_0": 5.0, "pass_2pt": 2.0, "yds_allow_450_499": -5.0, "st_td": 6.0, "rec_td": 6.0, "yds_allow_400_449": -3.0, "xpmiss": -1.0, "rush_td": 6.0, "yds_allow_550p": -7.0, "yds_allow_350_399": -1.0, "rec_2pt": 2.0, "st_fum_rec": 1.0, "fgmiss": -1.0, "ff": 1.0, "rec": 1.0, "yds_allow_200_299": 2.0, "pts_allow_14_20": 1.0, "int": 2.0, "def_st_fum_rec": 1.0, "fum_lost": -2.0, "pts_allow_1_6": 4.0, "yds_allow_500_549": -6.0, "xpm": 1.0, "rush_2pt": 2.0, "fum_rec": 2.0, "def_st_td": 6.0, "def_td": 6.0, "safe": 2.0, "pass_yd": 0.04, "blk_kick": 2.0, "pass_td": 4.0, "yds_allow_100_199": 3.0, "rush_yd": 0.1, "yds_allow_0_100": 5.0, "pts_allow_28_34": -1.0, "pts_allow_35p": -4.0, "fum_rec_td": 6.0, "rec_yd": 0.1, "def_st_ff": 1.0, "pts_allow_7_13": 3.0, "st_ff": 1.0}};
 /*END*/
 const ord = n => { const s=["th","st","nd","rd"], v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); };
 const tier = r => r >= 20 ? "good" : r >= 11 ? "mid" : "bad";
@@ -275,6 +281,7 @@ const row = p => locked(p) ? lockedRow(p) : `
     <div class="score"><span class="live${p.actual!=null?" has":""}">${p.actual!=null ? p.actual.toFixed(2) : "-"}</span></div>
   </div>`;
 let lastKey = "";
+let liveAt = null;
 function render() {
   const key = STARTERS.map(p => locked(p) ? 1 : 0).join("");
   if (key === lastKey) return;
@@ -285,12 +292,38 @@ function render() {
   if (done.length) {
     const tot = done.reduce((s, p) => s + p.actual, 0);
     const label = done.length === STARTERS.length ? "Final" : (done.length === 1 && STARTERS.find(p => !locked(p)).time.startsWith("Thu") ? "After TNF" : done.length + " of " + STARTERS.length + " played");
-    t.innerHTML = `<div><div class="lbl">${label}</div><div class="pts">${tot.toFixed(2)}</div></div><div class="of">${STARTERS.length - done.length ? (STARTERS.length - done.length) + " players left" : ""}</div>`;
+    const fresh = liveAt ? ` · live ${liveAt.toLocaleTimeString([], {hour: "numeric", minute: "2-digit"})}` : "";
+    t.innerHTML = `<div><div class="lbl">${label}${fresh}</div><div class="pts">${tot.toFixed(2)}</div></div><div class="of">${STARTERS.length - done.length ? (STARTERS.length - done.length) + " players left" : ""}</div>`;
     t.hidden = false;
   }
 }
 render();
 setInterval(render, 15000);
+
+// Live scoring straight from Sleeper (only players already revealed carry a Sleeper id).
+const scoreOf = (s, pos) => {
+  let pts = 0;
+  for (const [k, v] of Object.entries(s)) if (typeof v === "number" && META.scoring[k]) pts += v * META.scoring[k];
+  if (META.events && pos === "TE" && ((s.rec_td || 0) + (s.rush_td || 0)) > 0) pts += 2;   // Backdoor
+  if (META.events && pos === "K" && (s.fgm_50p || s.fgm_50_59 || s.fgm_60p)) pts += 2;    // Leg Day
+  return Math.round(pts * 100) / 100;
+};
+async function refreshScores() {
+  if (typeof META === "undefined" || !META.scoring) return;
+  const live = STARTERS.filter(p => !p.hidden && p.pid);
+  if (!live.length) return;
+  try {
+    const r = await fetch(`https://api.sleeper.app/v1/stats/nfl/regular/${META.season}/${META.week}`, { cache: "no-store" });
+    if (!r.ok) return;
+    const stats = await r.json();
+    for (const p of live) if (stats[p.pid]) p.actual = scoreOf(stats[p.pid], p.pos);
+    liveAt = new Date();
+    lastKey = ""; render();
+  } catch (e) { /* offline or blocked: keep the last published scores */ }
+}
+refreshScores();
+setInterval(() => { if (!document.hidden) refreshScores(); }, 60000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshScores(); });
 document.addEventListener("visibilitychange", () => { if (!document.hidden) render(); });
 </script>
 
