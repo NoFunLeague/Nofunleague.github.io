@@ -147,7 +147,8 @@ const STARTERS = [
   "kick": "2026-10-25T17:00:00Z",
   "ha": "@",
   "opp": "BAL",
-  "rank": 6
+  "rank": 6,
+  "actual": -0.2
  },
  {
   "slot": "RB",
@@ -185,7 +186,8 @@ const STARTERS = [
   "kick": "2026-10-25T17:00:00Z",
   "ha": "vs",
   "opp": "NYG",
-  "rank": 17
+  "rank": 17,
+  "actual": 4.3
  },
  {
   "slot": "WRT",
@@ -199,7 +201,8 @@ const STARTERS = [
   "kick": "2026-10-25T17:00:00Z",
   "ha": "@",
   "opp": "BAL",
-  "rank": 8
+  "rank": 8,
+  "actual": 0.0
  },
  {
   "slot": "WRT",
@@ -217,7 +220,8 @@ const STARTERS = [
   "kick": "2026-10-25T17:00:00Z",
   "ha": "@",
   "opp": "BAL",
-  "rank": 19
+  "rank": 19,
+  "actual": 0.0
  },
  {
   "slot": "DEF",
@@ -231,11 +235,12 @@ const STARTERS = [
   "kick": "2026-10-25T17:00:00Z",
   "ha": "vs",
   "opp": "TB",
-  "rank": 31
+  "rank": 31,
+  "actual": 8.0
  }
 ];
 const ALTS = [];
-const META = {"total": 49.8, "asof": "Checked Sun 10/25, 11:02AM MT: all players are still free agents."};
+const META = {"total": 49.8, "asof": "Checked Sun 10/25, 11:25AM MT: all players are still free agents."};
 /*END*/
 const ord = n => { const s=["th","st","nd","rd"], v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); };
 const tier = r => r >= 20 ? "good" : r >= 11 ? "mid" : "bad";
