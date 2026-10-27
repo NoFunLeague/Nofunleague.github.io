@@ -197,8 +197,21 @@ const STARTERS = [
   "actual": 5.3
  },
  {
+  "pid": "13150",
   "slot": "WR",
-  "hidden": true
+  "name": "Darius Cooper",
+  "pos": "WR",
+  "team": "PHI",
+  "bye": 10,
+  "proj": 9.6,
+  "ceil": 17.0,
+  "time": "Mon 6:15 PM",
+  "kick": "2026-10-27T00:15:00Z",
+  "ha": "vs",
+  "opp": "DAL",
+  "rank": 27,
+  "night": true,
+  "actual": 0.0
  },
  {
   "pid": "5001",
@@ -234,8 +247,21 @@ const STARTERS = [
   "actual": 9.85
  },
  {
+  "pid": "8110",
   "slot": "WRT",
-  "hidden": true
+  "name": "Jake Ferguson",
+  "pos": "TE",
+  "team": "DAL",
+  "bye": 14,
+  "proj": 8.6,
+  "ceil": 14.9,
+  "time": "Mon 6:15 PM",
+  "kick": "2026-10-27T00:15:00Z",
+  "ha": "@",
+  "opp": "PHI",
+  "rank": 15,
+  "night": true,
+  "actual": 0.0
  },
  {
   "pid": "7839",
@@ -271,7 +297,7 @@ const STARTERS = [
  }
 ];
 const ALTS = [];
-const META = {"total": 76.4, "asof": "Checked Sun 10/25, 6:22PM MT: all players are still free agents.", "season": "2026", "week": 7, "events": true, "scoring": {"sack": 1.0, "bonus_rec_te": 0.25, "fgm_yds": 0.1, "pass_int": -2.0, "pts_allow_0": 5.0, "pass_2pt": 2.0, "yds_allow_450_499": -5.0, "st_td": 6.0, "rec_td": 6.0, "yds_allow_400_449": -3.0, "xpmiss": -1.0, "rush_td": 6.0, "yds_allow_550p": -7.0, "yds_allow_350_399": -1.0, "rec_2pt": 2.0, "st_fum_rec": 1.0, "fgmiss": -1.0, "ff": 1.0, "rec": 1.0, "yds_allow_200_299": 2.0, "pts_allow_14_20": 1.0, "int": 2.0, "def_st_fum_rec": 1.0, "fum_lost": -2.0, "pts_allow_1_6": 4.0, "yds_allow_500_549": -6.0, "xpm": 1.0, "rush_2pt": 2.0, "fum_rec": 2.0, "def_st_td": 6.0, "def_td": 6.0, "safe": 2.0, "pass_yd": 0.04, "blk_kick": 2.0, "pass_td": 4.0, "yds_allow_100_199": 3.0, "rush_yd": 0.1, "yds_allow_0_100": 5.0, "pts_allow_28_34": -1.0, "pts_allow_35p": -4.0, "fum_rec_td": 6.0, "rec_yd": 0.1, "def_st_ff": 1.0, "pts_allow_7_13": 3.0, "st_ff": 1.0}};
+const META = {"total": 94.6, "asof": "Checked Mon 10/26, 6:17PM MT: all players are still free agents.", "season": "2026", "week": 7, "events": true, "scoring": {"sack": 1.0, "bonus_rec_te": 0.25, "fgm_yds": 0.1, "pass_int": -2.0, "pts_allow_0": 5.0, "pass_2pt": 2.0, "yds_allow_450_499": -5.0, "st_td": 6.0, "rec_td": 6.0, "yds_allow_400_449": -3.0, "xpmiss": -1.0, "rush_td": 6.0, "yds_allow_550p": -7.0, "yds_allow_350_399": -1.0, "rec_2pt": 2.0, "st_fum_rec": 1.0, "fgmiss": -1.0, "ff": 1.0, "rec": 1.0, "yds_allow_200_299": 2.0, "pts_allow_14_20": 1.0, "int": 2.0, "def_st_fum_rec": 1.0, "fum_lost": -2.0, "pts_allow_1_6": 4.0, "yds_allow_500_549": -6.0, "xpm": 1.0, "rush_2pt": 2.0, "fum_rec": 2.0, "def_st_td": 6.0, "def_td": 6.0, "safe": 2.0, "pass_yd": 0.04, "blk_kick": 2.0, "pass_td": 4.0, "yds_allow_100_199": 3.0, "rush_yd": 0.1, "yds_allow_0_100": 5.0, "pts_allow_28_34": -1.0, "pts_allow_35p": -4.0, "fum_rec_td": 6.0, "rec_yd": 0.1, "def_st_ff": 1.0, "pts_allow_7_13": 3.0, "st_ff": 1.0}};
 /*END*/
 const ord = n => { const s=["th","st","nd","rd"], v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); };
 const tier = r => r >= 20 ? "good" : r >= 11 ? "mid" : "bad";
