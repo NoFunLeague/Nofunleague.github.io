@@ -326,7 +326,7 @@ const row = p => locked(p) ? lockedRow(p) : `
     </div>
     <div class="info">
       <div class="l1">${p.name} <span class="pos c-${p.pos}">${p.pos}</span><span class="tm"> - ${p.team} (${p.bye})</span></div>
-      <div class="l3">${p.time} <span class="opp ${tier(p.rank)}">${p.ha} ${p.opp} (${ord(p.rank)})</span>${p.night ? moon : ""}${chev}${p.ques ? '<span class="ques">' + (p.inj || "QUES") + '</span>' : ""}${p.taken ? '<span class="ques" style="color:var(--bad)">ROSTERED</span>' : ""}${p.event ? '<span class="ques" style="color:var(--teal)">' + p.event + '</span>' : ""}</div>
+      <div class="l3">${p.time} <span class="opp ${tier(p.rank)}">${p.ha} ${p.opp} (${ord(p.rank)})</span>${p.night ? moon : ""}${chev}${p.ques ? '<span class="ques">' + (p.inj || "QUES") + '</span>' : ""}${p.taken ? '<span class="ques" style="color:var(--bad)">ROSTERED</span>' : ""}${p.stolen ? '<span class="ques" style="color:var(--teal)">STOLEN</span>' : ""}${p.event ? '<span class="ques" style="color:var(--teal)">' + p.event + '</span>' : ""}</div>
       ${p.bonus ? `<div class="l4 c-${p.pos}">${p.bonus}</div>` : ""}
     </div>
     <div class="score"><span class="live${p.actual!=null?" has":""}">${p.actual!=null ? p.actual.toFixed(2) : "-"}</span></div>
