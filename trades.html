@@ -1,0 +1,165 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body>
+<title>Week 8 Trade Tracker</title>
+<style>
+/* Layout: tally board up top, then one card per qualifying trade with a two-column sent/received split per team. Dark, matches versus page. */
+:root {
+  color-scheme: dark;
+  --bg: #0d1226; --card: #141a33; --card2: #1a2142; --line: #222a47;
+  --fg: #ffffff; --sub: #a9b0c6; --dim: #6b7290; --teal: #2ee6b6;
+  --good: #3ee07f; --bad: #ff5a6e; --warn: #ffb547;
+  --qb: #ff7eb0; --rb: #7ef0c6; --wr: #5ec8f5; --te: #ffad5c; --k: #bcaeff; --def: #c8694c;
+  --font: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font); -webkit-font-smoothing: antialiased;
+  padding: 18px max(16px, env(safe-area-inset-right, 0px)) 40px max(16px, env(safe-area-inset-left, 0px)); }
+.wrap { max-width: 720px; margin: 0 auto; }
+h1 { text-align: center; font-size: 20px; font-weight: 800; margin: 0; }
+.sub { text-align: center; color: var(--sub); font-size: 13px; margin: 4px 0 2px; }
+.sub a { color: var(--teal); }
+.fresh { text-align: center; color: var(--dim); font-size: 11.5px; margin: 0 0 14px; min-height: 14px; }
+.rules { background: var(--card); border-radius: 14px; padding: 12px 14px; font-size: 13px; color: var(--sub); line-height: 1.45; margin-bottom: 12px; }
+.rules b { color: var(--fg); }
+.sec { font-size: 12px; font-weight: 800; letter-spacing: .08em; color: var(--dim); text-transform: uppercase; margin: 18px 2px 8px; }
+table.tally { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 14px; overflow: hidden; font-size: 14px; }
+.tally th, .tally td { padding: 10px 12px; text-align: right; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.tally th:first-child, .tally td:first-child { text-align: left; }
+.tally th { color: var(--dim); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+.tally tr:last-child td { border-bottom: 0; }
+.card { background: var(--card); border-radius: 16px; padding: 14px; margin-bottom: 12px; }
+.card .top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.card .teams { font-weight: 800; font-size: 16px; }
+.card .when { color: var(--dim); font-size: 12px; }
+.badge { display: inline-block; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 999px; margin-top: 6px; }
+.badge.q { background: rgba(46,230,182,.15); color: var(--teal); }
+.badge.n { background: rgba(255,255,255,.07); color: var(--dim); }
+.side { background: var(--card2); border-radius: 12px; padding: 12px; margin-top: 10px; }
+.side .hd { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.side .tm { font-weight: 800; font-size: 15px; }
+.verdict { font-size: 12px; font-weight: 800; padding: 4px 9px; border-radius: 8px; white-space: nowrap; }
+.v-safe { background: rgba(62,224,127,.15); color: var(--good); }
+.v-risk { background: rgba(255,181,71,.15); color: var(--warn); }
+.v-pen { background: rgba(255,90,110,.18); color: var(--bad); }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+.col h4 { margin: 0 0 6px; font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: .06em; display: flex; justify-content: space-between; }
+.col h4 span { color: var(--fg); font-size: 13px; letter-spacing: 0; font-variant-numeric: tabular-nums; }
+.pl { display: flex; justify-content: space-between; gap: 6px; padding: 6px 0; border-top: 1px solid var(--line); font-size: 13px; }
+.pl .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.pl .meta { color: var(--sub); font-size: 11px; margin-top: 2px; }
+.pl .pt { font-weight: 800; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.pl .st { color: var(--dim); font-size: 10.5px; font-weight: 600; text-align: right; margin-top: 2px; }
+.c-QB { color: var(--qb); } .c-RB { color: var(--rb); } .c-WR { color: var(--wr); } .c-TE { color: var(--te); } .c-K { color: var(--k); } .c-DEF { color: var(--def); }
+.x2 { color: var(--teal); font-weight: 800; }
+.live { color: var(--good); } .fin { color: var(--dim); }
+.empty { color: var(--sub); text-align: center; padding: 20px; background: var(--card); border-radius: 14px; }
+.small .side, .small .cols { display: none; }
+@media (max-width: 460px) { .cols { grid-template-columns: 1fr; } }
+</style>
+
+<div class="wrap">
+  <h1>🤝 Week 8 Trade Tracker 🤝</h1>
+  <div class="sub">No Fun League · Trade &amp; Talent Grab · <a href="./">AI Team</a></div>
+  <div class="fresh" id="fresh">Loading live data…</div>
+  <div class="rules"><b>Gangbang +10:</b> a single trade moving 6+ counted players. Top-3 at a position (season points through week 7) counts as 2; $25+ FAAB counts as 1.<br><b>Morning After −6:</b> if the players a team sent away outscore the players it received in week 8, that team takes −6. Ties are safe.</div>
+  <div class="sec">Bonus board</div>
+  <div id="tally"></div>
+  <div class="sec">Qualifying trades</div>
+  <div id="trades"></div>
+  <div class="sec">Didn't qualify</div>
+  <div id="others"></div>
+</div>
+
+<script>
+/*DATA*/
+const LEAGUE = "1353573785546002432";
+const SCORING = {"sack": 1.0, "bonus_rec_te": 0.25, "fgm_yds": 0.1, "pass_int": -2.0, "pts_allow_0": 5.0, "pass_2pt": 2.0, "yds_allow_450_499": -5.0, "st_td": 6.0, "rec_td": 6.0, "yds_allow_400_449": -3.0, "xpmiss": -1.0, "rush_td": 6.0, "yds_allow_550p": -7.0, "yds_allow_350_399": -1.0, "rec_2pt": 2.0, "st_fum_rec": 1.0, "fgmiss": -1.0, "ff": 1.0, "rec": 1.0, "yds_allow_200_299": 2.0, "pts_allow_14_20": 1.0, "int": 2.0, "def_st_fum_rec": 1.0, "fum_lost": -2.0, "pts_allow_1_6": 4.0, "yds_allow_500_549": -6.0, "xpm": 1.0, "rush_2pt": 2.0, "fum_rec": 2.0, "def_st_td": 6.0, "def_td": 6.0, "safe": 2.0, "pass_yd": 0.04, "blk_kick": 2.0, "pass_td": 4.0, "yds_allow_100_199": 3.0, "rush_yd": 0.1, "yds_allow_0_100": 5.0, "pts_allow_28_34": -1.0, "pts_allow_35p": -4.0, "fum_rec_td": 6.0, "rec_yd": 0.1, "def_st_ff": 1.0, "pts_allow_7_13": 3.0, "st_ff": 1.0};
+const TOP3 = {"12185": 1, "11792": 2, "6650": 3, "9488": 1, "6786": 2, "8167": 3, "9221": 1, "8151": 2, "9509": 3, "8130": 1, "8131": 2, "4217": 3, "4984": 1, "8183": 2, "11564": 3, "MIN": 1, "TB": 2, "SEA": 3};
+const NAMES = {"4983":{"n":"DJ Moore","p":"WR","t":"BUF"},"6083":{"n":"Matt Gay","p":"K","t":"LV"},"7588":{"n":"Javonte Williams","p":"RB","t":"DAL"},"TB":{"n":"TB DEF","p":"DEF","t":"TB"},"8131":{"n":"Isaiah Likely","p":"TE","t":"NYG"},"12481":{"n":"Cam Skattebo","p":"RB","t":"NYG"},"8130":{"n":"Trey McBride","p":"TE","t":"ARI"},"9500":{"n":"Josh Downs","p":"WR","t":"IND"},"4866":{"n":"Saquon Barkley","p":"RB","t":"PHI"},"10213":{"n":"Tre Tucker","p":"WR","t":"LV"},"7564":{"n":"Ja'Marr Chase","p":"WR","t":"CIN"},"6650":{"n":"Chase McLaughlin","p":"K","t":"TB"},"11583":{"n":"Jonathon Brooks","p":"RB","t":"CAR"},"HOU":{"n":"HOU DEF","p":"DEF","t":"HOU"},"LAR":{"n":"LAR DEF","p":"DEF","t":"LAR"},"12519":{"n":"Luther Burden III","p":"WR","t":"CHI"},"96":{"n":"Aaron Rodgers","p":"QB","t":"PIT"},"11604":{"n":"Brock Bowers","p":"TE","t":"LV"},"8112":{"n":"Drake London","p":"WR","t":"ATL"},"9480":{"n":"Brenton Strange","p":"TE","t":"JAX"},"4037":{"n":"Chris Godwin Jr.","p":"WR","t":"TB"},"4046":{"n":"Patrick Mahomes","p":"QB","t":"KC"},"11646":{"n":"Jalen Coker","p":"WR","t":"CAR"},"7021":{"n":"Rico Dowdle","p":"RB","t":"PIT"},"9756":{"n":"Jordan Addison","p":"WR","t":"MIN"},"13833":{"n":"Dominic Zvada","p":"K","t":"NYG"},"13968":{"n":"Drew Stevens","p":"K","t":"WAS"},"4035":{"n":"Alvin Kamara","p":"RB","t":"NO"},"MIN":{"n":"MIN DEF","p":"DEF","t":"MIN"},"13346":{"n":"Denzel Boston","p":"WR","t":"CLE"},"13276":{"n":"Omar Cooper Jr.","p":"WR","t":"NYJ"},"12474":{"n":"Woody Marks","p":"RB","t":"HOU"},"9493":{"n":"Puka Nacua","p":"WR","t":"LAR"},"6801":{"n":"Tee Higgins","p":"WR","t":"CIN"},"11635":{"n":"Ladd McConkey","p":"WR","t":"LAC"},"11655":{"n":"Tyrone Tracy Jr.","p":"RB","t":"NYG"},"11566":{"n":"Jayden Daniels","p":"QB","t":"WAS"},"8146":{"n":"Garrett Wilson","p":"WR","t":"NYJ"},"8135":{"n":"Treylon Burks","p":"WR","t":"WAS"},"12185":{"n":"Spencer Shrader","p":"K","t":"IND"},"5844":{"n":"T.J. Hockenson","p":"TE","t":"MIN"},"11637":{"n":"Keon Coleman","p":"WR","t":"BUF"},"NYJ":{"n":"NYJ DEF","p":"DEF","t":"NYJ"},"6790":{"n":"D'Andre Swift","p":"RB","t":"CHI"},"11786":{"n":"Cam Little","p":"K","t":"JAX"},"8150":{"n":"Kyren Williams","p":"RB","t":"LAR"},"8126":{"n":"Wan'Dale Robinson","p":"WR","t":"TEN"},"2747":{"n":"Jason Myers","p":"K","t":"SEA"},"13281":{"n":"Jordyn Tyson","p":"WR","t":"NO"},"6865":{"n":"Colby Parkinson","p":"TE","t":"LAR"},"8167":{"n":"Christian Watson","p":"WR","t":"GB"},"6804":{"n":"Jordan Love","p":"QB","t":"GB"},"11539":{"n":"Jake Bates","p":"K","t":"DET"},"2449":{"n":"Stefon Diggs","p":"WR","t":"WAS"},"4217":{"n":"George Kittle","p":"TE","t":"SF"},"4881":{"n":"Lamar Jackson","p":"QB","t":"BAL"},"9482":{"n":"Michael Mayer","p":"TE","t":"LV"},"11533":{"n":"Brandon Aubrey","p":"K","t":"DAL"},"11631":{"n":"Brian Thomas Jr.","p":"WR","t":"JAX"},"12526":{"n":"Tetairoa McMillan","p":"WR","t":"CAR"},"421":{"n":"Matthew Stafford","p":"QB","t":"LAR"},"1466":{"n":"Travis Kelce","p":"TE","t":"KC"},"11620":{"n":"Rome Odunze","p":"WR","t":"CHI"},"5892":{"n":"David Montgomery","p":"RB","t":"HOU"},"8132":{"n":"Tyler Allgeier","p":"RB","t":"ARI"},"12490":{"n":"Bhayshul Tuten","p":"RB","t":"JAX"},"12517":{"n":"Colston Loveland","p":"TE","t":"CHI"},"11625":{"n":"Adonai Mitchell","p":"WR","t":"NYJ"},"13279":{"n":"Carnell Tate","p":"WR","t":"TEN"},"5967":{"n":"Tony Pollard","p":"RB","t":"TEN"},"KC":{"n":"KC DEF","p":"DEF","t":"KC"},"5850":{"n":"Josh Jacobs","p":"RB","t":"GB"},"1479":{"n":"Keenan Allen","p":"WR","t":"IND"},"9228":{"n":"Bryce Young","p":"QB","t":"CAR"},"12718":{"n":"Konata Mumpfield","p":"WR","t":"LAR"},"8154":{"n":"Brian Robinson Jr.","p":"RB","t":"ATL"},"8148":{"n":"Jameson Williams","p":"WR","t":"DET"},"5022":{"n":"Dallas Goedert","p":"TE","t":"PHI"},"6770":{"n":"Joe Burrow","p":"QB","t":"CIN"},"10859":{"n":"Sam LaPorta","p":"TE","t":"DET"},"12506":{"n":"Harold Fannin Jr.","p":"TE","t":"CLE"},"4454":{"n":"Kendrick Bourne","p":"WR","t":"ARI"},"8151":{"n":"Kenneth Walker III","p":"RB","t":"KC"},"3198":{"n":"Derrick Henry","p":"RB","t":"BAL"},"13301":{"n":"Antonio Williams","p":"WR","t":"WAS"},"11564":{"n":"Drake Maye","p":"QB","t":"NE"},"8408":{"n":"Jordan Mason","p":"RB","t":"MIN"},"9509":{"n":"Bijan Robinson","p":"RB","t":"ATL"},"4984":{"n":"Josh Allen","p":"QB","t":"BUF"},"1166":{"n":"Kirk Cousins","p":"QB","t":"LV"},"11792":{"n":"Will Reichard","p":"K","t":"MIN"},"5872":{"n":"Deebo Samuel Sr.","p":"WR","t":"SF"},"13545":{"n":"Trey Smack","p":"K","t":"GB"},"3451":{"n":"Ka'imi Fairbairn","p":"K","t":"HOU"},"12533":{"n":"Jacory Croskey-Merritt","p":"RB","t":"WAS"},"3163":{"n":"Jared Goff","p":"QB","t":"DET"},"7569":{"n":"Nico Collins","p":"WR","t":"HOU"},"4950":{"n":"Christian Kirk","p":"WR","t":"SF"},"13298":{"n":"KC Concepcion Jr.","p":"WR","t":"CLE"},"7547":{"n":"Amon-Ra St. Brown","p":"WR","t":"DET"},"JAX":{"n":"JAX DEF","p":"DEF","t":"JAX"},"11632":{"n":"Malik Nabers","p":"WR","t":"NYG"},"11624":{"n":"Xavier Worthy","p":"WR","t":"KC"},"13287":{"n":"Jeremiyah Love","p":"RB","t":"ARI"},"9997":{"n":"Zay Flowers","p":"WR","t":"BAL"},"12487":{"n":"Terrance Ferguson","p":"TE","t":"LAR"},"7525":{"n":"DeVonta Smith","p":"WR","t":"PHI"},"12518":{"n":"Tyler Warren","p":"TE","t":"IND"},"11586":{"n":"Blake Corum","p":"RB","t":"LAR"},"11581":{"n":"MarShawn Lloyd","p":"RB","t":"GB"},"9758":{"n":"C.J. Stroud","p":"QB","t":"HOU"},"12469":{"n":"Dylan Sampson","p":"RB","t":"CLE"},"3294":{"n":"Dak Prescott","p":"QB","t":"DAL"},"7543":{"n":"Travis Etienne Jr.","p":"RB","t":"NO"},"5947":{"n":"Jakobi Meyers","p":"WR","t":"JAX"},"3321":{"n":"Tyreek Hill","p":"WR","t":null},"12545":{"n":"Tyler Shough","p":"QB","t":"NO"},"4199":{"n":"Aaron Jones Sr.","p":"RB","t":"MIN"},"6813":{"n":"Jonathan Taylor","p":"RB","t":"IND"},"10232":{"n":"Michael Wilson","p":"WR","t":"ARI"},"12507":{"n":"Omarion Hampton","p":"RB","t":"LAC"},"13286":{"n":"Jadarian Price","p":"RB","t":"SEA"},"12529":{"n":"TreVeyon Henderson","p":"RB","t":"NE"},"13424":{"n":"Seth McGowan","p":"RB","t":"IND"},"ATL":{"n":"ATL DEF","p":"DEF","t":"ATL"},"5846":{"n":"DK Metcalf","p":"WR","t":"PIT"},"12489":{"n":"RJ Harvey","p":"RB","t":"DEN"},"4034":{"n":"Christian McCaffrey","p":"RB","t":"SF"},"12501":{"n":"Matthew Golden","p":"WR","t":"GB"},"8183":{"n":"Brock Purdy","p":"QB","t":"SF"},"11729":{"n":"Sione Vaki","p":"RB","t":"DET"},"13414":{"n":"Kaelon Black","p":"RB","t":"SF"},"PIT":{"n":"PIT DEF","p":"DEF","t":"PIT"},"CLE":{"n":"CLE DEF","p":"DEF","t":"CLE"},"11584":{"n":"Bucky Irving","p":"RB","t":"TB"},"12527":{"n":"Ashton Jeanty","p":"RB","t":"LV"},"7526":{"n":"Jaylen Waddle","p":"WR","t":"DEN"},"6794":{"n":"Justin Jefferson","p":"WR","t":"MIN"},"5045":{"n":"Courtland Sutton","p":"WR","t":"DEN"},"11628":{"n":"Marvin Harrison Jr.","p":"WR","t":"HOU"},"9487":{"n":"Parker Washington","p":"WR","t":"JAX"},"9488":{"n":"Jaxon Smith-Njigba","p":"WR","t":"SEA"},"CIN":{"n":"CIN DEF","p":"DEF","t":"CIN"},"8137":{"n":"George Pickens","p":"WR","t":"DAL"},"8142":{"n":"Alec Pierce","p":"WR","t":"IND"},"7611":{"n":"Rhamondre Stevenson","p":"RB","t":"NE"},"13345":{"n":"Jonah Coleman","p":"RB","t":"DEN"},"3271":{"n":"Tyler Higbee","p":"TE","t":"LAR"},"8144":{"n":"Chris Olave","p":"WR","t":"NO"},"WAS":{"n":"WAS DEF","p":"DEF","t":"WAS"},"SEA":{"n":"SEA DEF","p":"DEF","t":"SEA"},"8136":{"n":"Rachaad White","p":"RB","t":"WAS"},"10235":{"n":"Roschon Johnson","p":"RB","t":"CHI"},"13337":{"n":"Emmett Johnson","p":"RB","t":"KC"},"7839":{"n":"Evan McPherson","p":"K","t":"CIN"},"8138":{"n":"James Cook III","p":"RB","t":"BUF"},"9484":{"n":"Tucker Kraft","p":"TE","t":"GB"},"5189":{"n":"Eddy Pineiro","p":"K","t":"SF"},"11435":{"n":"Emanuel Wilson","p":"RB","t":"SEA"},"12495":{"n":"Ollie Gordon II","p":"RB","t":"MIA"},"3214":{"n":"Hunter Henry","p":"TE","t":"NE"},"8228":{"n":"Jaylen Warren","p":"RB","t":"PIT"},"11576":{"n":"Braelon Allen","p":"RB","t":"NYJ"},"3257":{"n":"Jacoby Brissett","p":"QB","t":"ARI"},"7002":{"n":"Juwan Johnson","p":"TE","t":"NO"},"7594":{"n":"Chuba Hubbard","p":"RB","t":"CAR"},"8155":{"n":"Breece Hall","p":"RB","t":"NYJ"},"2133":{"n":"Davante Adams","p":"WR","t":"LAR"},"12514":{"n":"Emeka Egbuka","p":"WR","t":"TB"},"9221":{"n":"Jahmyr Gibbs","p":"RB","t":"DET"},"7553":{"n":"Kyle Pitts Sr.","p":"TE","t":"ATL"},"6786":{"n":"CeeDee Lamb","p":"WR","t":"DAL"},"12534":{"n":"Kyle Monangai","p":"RB","t":"CHI"},"11560":{"n":"Caleb Williams","p":"QB","t":"CHI"},"6806":{"n":"J.K. Dobbins","p":"RB","t":"DEN"},"10229":{"n":"Rashee Rice","p":"WR","t":"KC"},"9753":{"n":"Zach Charbonnet","p":"RB","t":"SEA"},"2216":{"n":"Mike Evans","p":"WR","t":"SF"},"5859":{"n":"A.J. Brown","p":"WR","t":"NE"},"9224":{"n":"Chase Brown","p":"RB","t":"CIN"},"9754":{"n":"Quentin Johnston","p":"WR","t":"LAC"},"11834":{"n":"Devaughn Vele","p":"WR","t":"NO"},"7523":{"n":"Trevor Lawrence","p":"QB","t":"JAX"},"12512":{"n":"Quinshon Judkins","p":"RB","t":"CLE"},"13293":{"n":"Ja'Kobi Lane","p":"WR","t":"BAL"},"1945":{"n":"Chris Boswell","p":"K","t":"PIT"},"NE":{"n":"NE DEF","p":"DEF","t":"NE"},"13274":{"n":"Germie Bernard","p":"WR","t":"PIT"},"10236":{"n":"Dalton Kincaid","p":"TE","t":"BUF"}};
+const EXCLUDE = ["1421007541659316224"];
+/*END*/
+const API = "https://api.sleeper.app";
+const j = async u => { const r = await fetch(u, { cache: "no-store" }); if (!r.ok) throw new Error(u); return r.json(); };
+const pts = s => { let t = 0; for (const [k, v] of Object.entries(s || {})) if (typeof v === "number" && SCORING[k]) t += v * SCORING[k]; return Math.round(t * 100) / 100; };
+const info = id => NAMES[id] || { n: id, p: "?", t: "" };
+const count = id => (TOP3[id] ? 2 : 1);
+let S = { tx: [], stats: {}, games: {}, teams: {}, at: null };
+
+function gameOf(team) {
+  const g = S.games[team];
+  if (!g) return { label: "BYE", done: true, started: true };
+  if (g.status === "complete") return { label: "Final", done: true, started: true };
+  if (g.status === "pre_game") return { label: g.date ? new Date(g.date + "T12:00:00").toLocaleDateString([], { weekday: "short" }) : "Upcoming", done: false, started: false };
+  return { label: "Live", done: false, started: true, live: true };
+}
+function row(id) {
+  const p = info(id), g = gameOf(p.t), v = S.stats[id] ? pts(S.stats[id]) : 0;
+  const tag = TOP3[id] ? ` <span class="x2">#${TOP3[id]} ×2</span>` : "";
+  return `<div class="pl"><div style="min-width:0"><div class="nm">${p.n}</div><div class="meta"><span class="c-${p.p}">${p.p}</span> · ${p.t || "FA"}${tag}</div></div>
+    <div><div class="pt">${g.started ? v.toFixed(2) : "–"}</div><div class="st ${g.live ? "live" : g.done ? "fin" : ""}">${g.label}</div></div></div>`;
+}
+function analyze(t) {
+  const adds = t.adds || {}, drops = t.drops || {};
+  let units = 0; for (const id of Object.keys(adds)) units += count(id);
+  for (const b of t.waiver_budget || []) if (b.amount >= 25) units += 1;
+  const sides = t.roster_ids.map(r => {
+    const got = Object.keys(adds).filter(id => adds[id] === r);
+    const sent = Object.keys(adds).filter(id => drops[id] === r);
+    const sum = ids => ids.reduce((s, id) => s + (S.stats[id] ? pts(S.stats[id]) : 0), 0);
+    const done = [...got, ...sent].every(id => gameOf(info(id).t).done);
+    const g = sum(got), s = sum(sent);
+    const any = [...got, ...sent].some(id => gameOf(info(id).t).started && S.games[info(id).t]);
+    return { r, team: S.teams[r] || ("Team " + r), got, sent, g, s, done, any, pen: s > g };
+  });
+  return { units, ok: units >= 6, sides };
+}
+function verdict(sd) {
+  const d = Math.abs(sd.g - sd.s).toFixed(2);
+  if (!sd.any && !sd.done) return `<span class="verdict v-risk" style="background:rgba(255,255,255,.07);color:var(--sub)">Waiting on games</span>`;
+  if (sd.done) return sd.pen ? `<span class="verdict v-pen">FINAL −6</span>` : `<span class="verdict v-safe">FINAL safe</span>`;
+  return sd.pen ? `<span class="verdict v-risk">−6 risk · down ${d}</span>` : `<span class="verdict v-safe">Safe · up ${d}</span>`;
+}
+function render() {
+  const list = S.tx.filter(t => t.type === "trade" && t.status === "complete" && !EXCLUDE.includes(t.transaction_id))
+                   .sort((a, b) => b.status_updated - a.status_updated).map(t => ({ t, a: analyze(t) }));
+  const q = list.filter(x => x.a.ok), n = list.filter(x => !x.a.ok);
+  const board = {};
+  for (const { a } of q) for (const sd of a.sides) {
+    const b = board[sd.team] || (board[sd.team] = { gb: 0, ma: 0, done: true });
+    b.gb += 10; if (sd.pen) b.ma -= 6; b.done = b.done && sd.done;
+  }
+  const rows = Object.entries(board).sort((x, y) => (y[1].gb + y[1].ma) - (x[1].gb + x[1].ma));
+  document.getElementById("tally").innerHTML = rows.length ? `<table class="tally"><tr><th>Team</th><th>Gangbang</th><th>Morning After</th><th>Net</th></tr>${rows.map(([tm, b]) =>
+    `<tr><td>${tm}</td><td>+${b.gb}</td><td style="color:${b.ma ? "var(--bad)" : "var(--good)"}">${b.ma}${b.done ? "" : " <span style='color:var(--dim);font-size:11px'>(live)</span>"}</td><td><b>${b.gb + b.ma >= 0 ? "+" : ""}${b.gb + b.ma}</b></td></tr>`).join("")}</table>`
+    : `<div class="empty">No qualifying trades yet.</div>`;
+  const card = ({ t, a }, small) => {
+    const when = new Date(t.status_updated).toLocaleString([], { weekday: "short", month: "numeric", day: "numeric", hour: "numeric", minute: "2-digit" });
+    const nPlayers = Object.keys(t.adds || {}).length;
+    return `<div class="card${small ? " small" : ""}"><div class="top"><div class="teams">${a.sides.map(s => s.team).join(" ↔ ")}</div><div class="when">${when}</div></div>
+      <span class="badge ${a.ok ? "q" : "n"}">${nPlayers} players · ${a.units} counted · ${a.ok ? "QUALIFIES +10 each" : "does not qualify"}</span>
+      ${small ? `<div class="meta" style="margin-top:8px;color:var(--sub);font-size:12.5px">${Object.keys(t.adds || {}).map(id => info(id).n).join(", ")}</div>` : ""}
+      ${a.sides.map(sd => `<div class="side"><div class="hd"><div class="tm">${sd.team}</div>${verdict(sd)}</div>
+        <div class="cols"><div class="col"><h4>Sent away <span>${sd.s.toFixed(2)}</span></h4>${sd.sent.map(row).join("")}</div>
+        <div class="col"><h4>Received <span>${sd.g.toFixed(2)}</span></h4>${sd.got.map(row).join("")}</div></div></div>`).join("")}</div>`;
+  };
+  document.getElementById("trades").innerHTML = q.length ? q.map(x => card(x, false)).join("") : `<div class="empty">None yet. Get dealing.</div>`;
+  document.getElementById("others").innerHTML = n.length ? n.map(x => card(x, true)).join("") : `<div class="empty">None.</div>`;
+  document.getElementById("fresh").textContent = S.at ? `Live from Sleeper · updated ${S.at.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}` : "";
+}
+async function refresh() {
+  try {
+    const [tx, stats, sched, users, rosters] = await Promise.all([
+      j(`${API}/v1/league/${LEAGUE}/transactions/8`), j(`${API}/v1/stats/nfl/regular/2026/8`),
+      j(`${API}/schedule/nfl/regular/2026`), j(`${API}/v1/league/${LEAGUE}/users`), j(`${API}/v1/league/${LEAGUE}/rosters`)]);
+    const uname = Object.fromEntries(users.map(u => [u.user_id, u.display_name]));
+    S.teams = Object.fromEntries(rosters.map(r => [r.roster_id, uname[r.owner_id] || "Team " + r.roster_id]));
+    S.games = {}; for (const g of sched) if (g.week === 8) { S.games[g.home] = g; S.games[g.away] = g; }
+    S.tx = tx; S.stats = stats || {}; S.at = new Date();
+  } catch (e) { /* keep last good data */ }
+  render();
+}
+refresh();
+setInterval(() => { if (!document.hidden) refresh(); }, 60000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) refresh(); });
+</script>
+
+</body></html>
