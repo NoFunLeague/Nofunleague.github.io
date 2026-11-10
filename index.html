@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
-<title>AI Team Week 7</title>
+<title>AI Team</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* Layout: fantasy-app lineup screen — header, starters list (pill · avatar · 3-line info · score column), alternates list, notes. Single dark look by choice. */
@@ -101,6 +101,18 @@ h2.sec { margin: 34px 0 14px; font-size: 23px; font-weight: 700; color: #dfe4f5;
   .top h1 { font-size: 21px; } .top p { font-size: 13.5px; } .week { font-size: 17px; }
 }
 @media (max-width: 370px) { .av { display: none; } .row { grid-template-columns: 54px minmax(0,1fr) auto; } }
+.evt { background: linear-gradient(135deg, #3a0d1f, #1a1033); border: 1px solid #5c1a35; border-radius: 14px; padding: 14px 16px; margin: -6px 0 12px; }
+.evt .h { font-weight: 800; font-size: 15px; letter-spacing: .02em; }
+.evt ul { margin: 8px 0 0; padding-left: 18px; color: #d9dcea; font-size: 13.5px; line-height: 1.5; }
+.sec { font-size: 12px; font-weight: 800; letter-spacing: .08em; color: var(--dim); text-transform: uppercase; margin: 22px 2px 8px; }
+.vs { background: #161d38; border-radius: 14px; overflow: hidden; }
+.vs .r { display: grid; grid-template-columns: minmax(0,1fr) auto auto; gap: 10px; align-items: center; padding: 11px 14px; border-bottom: 1px solid #222a47; font-size: 14.5px; }
+.vs .r:last-child { border-bottom: 0; }
+.vs .nm { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vs .sc { font-variant-numeric: tabular-nums; font-weight: 800; }
+.vs .st { font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
+.st.ai { background: rgba(255,90,110,.16); color: #ff5a6e; } .st.hu { background: rgba(62,224,127,.15); color: #3ee07f; } .st.wait { background: rgba(255,255,255,.07); color: var(--sub); }
+.vs .rec { text-align: center; color: var(--sub); font-size: 13px; padding: 10px; border-top: 1px solid #222a47; }
 </style>
 
 <div class="wrap">
@@ -109,17 +121,27 @@ h2.sec { margin: 34px 0 14px; font-size: 23px; font-weight: 700; color: #dfe4f5;
       <h1>Starters
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dfe4f5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>
       </h1>
-      <p>AI Team · No Fun League · <a href="versus.html" style="color:var(--teal)">Matchup vs Josh</a></p>
+      <p>AI Team · No Fun League</p>
     </div>
     <div class="week">
       <svg viewBox="0 0 12 18" aria-hidden="true"><path d="M10 2L3 9l7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Week 7
+      <span id="wk">Week</span>
       <svg viewBox="0 0 12 18" aria-hidden="true"><path d="M2 2l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </div>
   </div>
 
+  <div class="evt">
+    <div class="h">🚨 THE AI IS BACK 🚨</div>
+    <ul>
+      <li>Plays every owner this week</li>
+      <li>Can steal benched players from your roster</li>
+      <li>Beat the AI: +1 win · Lose to the AI: +1 loss</li>
+    </ul>
+  </div>
   <div class="tally" id="tally" hidden></div>
   <div class="list" id="starters"></div>
+  <div class="sec">AI vs the league</div>
+  <div class="vs" id="vs"><div class="rec">Loading scores…</div></div>
 </div>
 
 <script>
@@ -132,172 +154,48 @@ const TEAM = {
 /*DATA*/
 const STARTERS = [
  {
-  "pid": "11563",
   "slot": "QB",
-  "name": "Bo Nix",
-  "pos": "QB",
-  "team": "DEN",
-  "bye": 10,
-  "proj": 18.9,
-  "ceil": 25.6,
-  "time": "Sun 2:05 PM",
-  "kick": "2026-10-25T20:05:00Z",
-  "ha": "@",
-  "opp": "ARI",
-  "rank": 29,
-  "actual": 26.28
+  "hidden": true
  },
  {
-  "pid": "4147",
   "slot": "RB",
-  "name": "Samaje Perine",
-  "pos": "RB",
-  "team": "CIN",
-  "bye": 6,
-  "proj": 5.8,
-  "ceil": 11.2,
-  "time": "Sun 11:00 AM",
-  "kick": "2026-10-25T17:00:00Z",
-  "ha": "@",
-  "opp": "BAL",
-  "rank": 6,
-  "actual": 7.6
+  "hidden": true
  },
  {
-  "pid": "8122",
   "slot": "RB",
-  "name": "Zonovan Knight",
-  "pos": "RB",
-  "team": "ARI",
-  "bye": 14,
-  "proj": 7.7,
-  "ceil": 11.9,
-  "time": "Sun 2:05 PM",
-  "kick": "2026-10-25T20:05:00Z",
-  "ha": "vs",
-  "opp": "DEN",
-  "rank": 23,
-  "actual": 9.3
+  "hidden": true
  },
  {
-  "pid": "9501",
   "slot": "WR",
-  "name": "DeMario Douglas",
-  "pos": "WR",
-  "team": "NE",
-  "bye": 11,
-  "proj": 8.6,
-  "ceil": 16.7,
-  "time": "Thu 6:15 PM",
-  "kick": "2026-10-23T00:15:00Z",
-  "ha": "@",
-  "opp": "CHI",
-  "rank": 16,
-  "night": true,
-  "actual": 5.3
+  "hidden": true
  },
  {
-  "pid": "13150",
   "slot": "WR",
-  "name": "Darius Cooper",
-  "pos": "WR",
-  "team": "PHI",
-  "bye": 10,
-  "proj": 9.6,
-  "ceil": 17.0,
-  "time": "Mon 6:15 PM",
-  "kick": "2026-10-27T00:15:00Z",
-  "ha": "vs",
-  "opp": "DAL",
-  "rank": 27,
-  "night": true,
-  "actual": 2.7
+  "hidden": true
  },
  {
-  "pid": "5001",
   "slot": "WRT",
-  "name": "Dalton Schultz",
-  "pos": "TE",
-  "team": "HOU",
-  "bye": 8,
-  "proj": 9.4,
-  "ceil": 17.8,
-  "time": "Sun 11:00 AM",
-  "kick": "2026-10-25T17:00:00Z",
-  "ha": "vs",
-  "opp": "NYG",
-  "rank": 17,
-  "actual": 10.75
+  "hidden": true
  },
  {
-  "pid": "4993",
   "slot": "WRT",
-  "name": "Mike Gesicki",
-  "pos": "TE",
-  "team": "CIN",
-  "bye": 6,
-  "proj": 8.9,
-  "ceil": 15.7,
-  "time": "Sun 11:00 AM",
-  "kick": "2026-10-25T17:00:00Z",
-  "ha": "@",
-  "opp": "BAL",
-  "rank": 8,
-  "event": "Backdoor +2",
-  "actual": 9.85
+  "hidden": true
  },
  {
-  "pid": "8110",
   "slot": "WRT",
-  "name": "Jake Ferguson",
-  "pos": "TE",
-  "team": "DAL",
-  "bye": 14,
-  "proj": 8.6,
-  "ceil": 14.9,
-  "time": "Mon 6:15 PM",
-  "kick": "2026-10-27T00:15:00Z",
-  "ha": "@",
-  "opp": "PHI",
-  "rank": 15,
-  "night": true,
-  "actual": 0.0
+  "hidden": true
  },
  {
-  "pid": "7839",
   "slot": "K",
-  "name": "Evan McPherson",
-  "pos": "K",
-  "team": "CIN",
-  "bye": 6,
-  "proj": 9.6,
-  "ceil": 14.7,
-  "time": "Sun 11:00 AM",
-  "kick": "2026-10-25T17:00:00Z",
-  "ha": "@",
-  "opp": "BAL",
-  "rank": 19,
-  "actual": 5.0
+  "hidden": true
  },
  {
-  "pid": "CAR",
   "slot": "DEF",
-  "name": "Carolina Panthers",
-  "pos": "DEF",
-  "team": "CAR",
-  "bye": 5,
-  "proj": 7.5,
-  "ceil": 18.5,
-  "time": "Sun 11:00 AM",
-  "kick": "2026-10-25T17:00:00Z",
-  "ha": "vs",
-  "opp": "TB",
-  "rank": 31,
-  "actual": -3.0
+  "hidden": true
  }
 ];
 const ALTS = [];
-const META = {"total": 94.6, "asof": "Checked Mon 10/26, 9:20PM MT: all players are still free agents.", "season": "2026", "week": 7, "events": true, "scoring": {"sack": 1.0, "bonus_rec_te": 0.25, "fgm_yds": 0.1, "pass_int": -2.0, "pts_allow_0": 5.0, "pass_2pt": 2.0, "yds_allow_450_499": -5.0, "st_td": 6.0, "rec_td": 6.0, "yds_allow_400_449": -3.0, "xpmiss": -1.0, "rush_td": 6.0, "yds_allow_550p": -7.0, "yds_allow_350_399": -1.0, "rec_2pt": 2.0, "st_fum_rec": 1.0, "fgmiss": -1.0, "ff": 1.0, "rec": 1.0, "yds_allow_200_299": 2.0, "pts_allow_14_20": 1.0, "int": 2.0, "def_st_fum_rec": 1.0, "fum_lost": -2.0, "pts_allow_1_6": 4.0, "yds_allow_500_549": -6.0, "xpm": 1.0, "rush_2pt": 2.0, "fum_rec": 2.0, "def_st_td": 6.0, "def_td": 6.0, "safe": 2.0, "pass_yd": 0.04, "blk_kick": 2.0, "pass_td": 4.0, "yds_allow_100_199": 3.0, "rush_yd": 0.1, "yds_allow_0_100": 5.0, "pts_allow_28_34": -1.0, "pts_allow_35p": -4.0, "fum_rec_td": 6.0, "rec_yd": 0.1, "def_st_ff": 1.0, "pts_allow_7_13": 3.0, "st_ff": 1.0}};
+const META = {"total": 0, "asof": "Checked Tue 11/10, 9:37AM MT: all players are still free agents.", "season": "2026", "week": 10, "events": false, "scoring": {"sack": 1.0, "bonus_rec_te": 0.25, "fgm_yds": 0.1, "pass_int": -2.0, "pts_allow_0": 5.0, "pass_2pt": 2.0, "yds_allow_450_499": -5.0, "st_td": 6.0, "rec_td": 6.0, "yds_allow_400_449": -3.0, "xpmiss": -1.0, "rush_td": 6.0, "yds_allow_550p": -7.0, "yds_allow_350_399": -1.0, "rec_2pt": 2.0, "st_fum_rec": 1.0, "fgmiss": -1.0, "ff": 1.0, "rec": 1.0, "yds_allow_200_299": 2.0, "pts_allow_14_20": 1.0, "int": 2.0, "def_st_fum_rec": 1.0, "fum_lost": -2.0, "pts_allow_1_6": 4.0, "yds_allow_500_549": -6.0, "xpm": 1.0, "rush_2pt": 2.0, "fum_rec": 2.0, "def_st_td": 6.0, "def_td": 6.0, "safe": 2.0, "pass_yd": 0.04, "blk_kick": 2.0, "pass_td": 4.0, "yds_allow_100_199": 3.0, "rush_yd": 0.1, "yds_allow_0_100": 5.0, "pts_allow_28_34": -1.0, "pts_allow_35p": -4.0, "fum_rec_td": 6.0, "rec_yd": 0.1, "def_st_ff": 1.0, "pts_allow_7_13": 3.0, "st_ff": 1.0}};
 /*END*/
 const ord = n => { const s=["th","st","nd","rd"], v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); };
 const tier = r => r >= 20 ? "good" : r >= 11 ? "mid" : "bad";
@@ -376,6 +274,48 @@ refreshScores();
 setInterval(() => { if (!document.hidden) refreshScores(); }, 60000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshScores(); });
 document.addEventListener("visibilitychange", () => { if (!document.hidden) render(); });
+
+// AI vs every owner: owner totals straight from Sleeper matchups, AI total = revealed players only.
+const LEAGUE = "1353573785546002432";
+document.getElementById("wk").textContent = "Week " + META.week;
+document.title = "AI Team · Week " + META.week;
+let VS = null;
+function aiTotal() { return STARTERS.filter(p => !locked(p) && p.actual != null).reduce((s, p) => s + p.actual, 0); }
+function renderVs() {
+  const el = document.getElementById("vs");
+  if (!VS) return;
+  const ai = aiTotal(), final = VS.final;
+  let w = 0, l = 0;
+  const rows = VS.teams.map(t => {
+    const started = t.pts > 0 || ai > 0;
+    let cls = "wait", lab = "Not started";
+    if (started) {
+      const aiUp = ai > t.pts;
+      cls = aiUp ? "ai" : "hu";
+      lab = final ? (aiUp ? "AI WINS" : "OWNER WINS") : (aiUp ? "AI leads" : "Owner leads");
+      if (final) aiUp ? w++ : l++;
+    }
+    return `<div class="r"><div class="nm">${t.name}</div><div class="sc">${t.pts.toFixed(2)}</div><div class="st ${cls}">${lab}</div></div>`;
+  }).sort((a, b) => 0);
+  const rec = final ? `AI record this week: ${w}-${l}` : `AI so far: ${ai.toFixed(2)} · ${VS.teams.filter(t => ai > t.pts).length} of ${VS.teams.length} owners trailing`;
+  el.innerHTML = rows.join("") + `<div class="rec">${rec}</div>`;
+}
+async function refreshVs() {
+  try {
+    const A = "https://api.sleeper.app/v1/league/" + LEAGUE;
+    const [ms, us, rs, sch] = await Promise.all([A + "/matchups/" + META.week, A + "/users", A + "/rosters", "https://api.sleeper.app/schedule/nfl/regular/" + META.season]
+      .map(u => fetch(u, { cache: "no-store" }).then(r => r.json())));
+    const uname = Object.fromEntries(us.map(u => [u.user_id, u.metadata && u.metadata.team_name ? u.display_name : u.display_name]));
+    const own = Object.fromEntries(rs.map(r => [r.roster_id, uname[r.owner_id] || "Team " + r.roster_id]));
+    const wk = sch.filter(g => g.week === META.week);
+    VS = { final: wk.length > 0 && wk.every(g => g.status === "complete"),
+           teams: ms.map(m => ({ name: own[m.roster_id], pts: m.points || 0 })).sort((a, b) => b.pts - a.pts || a.name.localeCompare(b.name)) };
+    renderVs();
+  } catch (e) { /* keep last */ }
+}
+refreshVs();
+setInterval(() => { if (!document.hidden) { refreshVs(); } }, 60000);
+setInterval(renderVs, 15000);
 </script>
 
 </body></html>
