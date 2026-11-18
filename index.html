@@ -83,7 +83,7 @@ async function load() {
       const mv = d > 0 ? `<span class="moved up">▲${d}</span>` : d < 0 ? `<span class="moved dn">▼${-d}</span>` : "";
       const ai = t.aw || t.al ? `<div class="ai ${t.aw > t.al ? "w" : t.aw < t.al ? "l" : "n"}">${t.aw}-${t.al}</div>` : `<div class="ai n">–</div>`;
       html += `<div class="row${i === cut - 1 ? " cutline" : ""}"><div class="rk">${i + 1}</div>
-        <div class="tm"><div class="n">${t.n}${mv}</div><div class="s">Sleeper ${t.sw}-${t.sl}${t.st ? "-" + t.st : ""}</div></div>
+        <div class="tm"><div class="n">${t.n}</div><div class="s">Sleeper ${t.sw}-${t.sl}${t.st ? "-" + t.st : ""}</div></div>
         <div class="rec">${t.w}-${t.l}${t.st ? "-" + t.st : ""}</div>${ai}<div class="pf">${t.pf.toFixed(1)}${t.owed ? `<div style="font-size:10px;color:var(--dim)">incl ${t.owed > 0 ? "+" : ""}${+t.owed.toFixed(1)} owed</div>` : ""}</div></div>`;
       if (i === cut - 1) html += `<div class="cutlbl">Playoff line</div>`;
     });
