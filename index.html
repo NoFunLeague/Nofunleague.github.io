@@ -44,25 +44,36 @@ h1 { text-align: center; font-size: 21px; font-weight: 800; margin: 0; }
   <div class="fresh" id="fresh"></div>
   <div class="sec">AI games</div>
   <div class="card log" id="log"></div>
-  <div class="note">Sleeper's record already includes event bonuses. This page adds the games played against the AI, which Sleeper can't record. Top 8 make the playoffs; ties broken by points for. Arrows show the change from Sleeper's own standings.</div>
+  <div class="note">Records = Sleeper's record (which includes entered event bonuses) plus games against the AI, which Sleeper can't record. PF also adds event bonuses that are owed but not yet entered in Sleeper ("owed"). Top 8 make the playoffs; ties broken by points for. Arrows show the change from Sleeper's own standings.</div>
 </div>
 
 <script>
 /*DATA*/
 const LEAGUE = "1353573785546002432";
-const LEDGER = {"note": "Extra results NOT in Sleeper: AI games only (event bonuses are entered in Sleeper as score adjustments). w/l = record change.", "entries": [{"week": 10, "team": "Hutch3", "w": 1, "ai": "W", "why": "Beat the AI 200.16-120.64"}, {"week": 10, "team": "Justang", "w": 1, "ai": "W", "why": "Beat the AI 180.25-120.64"}, {"week": 10, "team": "ZachInBlack", "w": 1, "ai": "W", "why": "Beat the AI 151.61-120.64"}, {"week": 10, "team": "BroganMi", "w": 1, "ai": "W", "why": "Beat the AI 141.01-120.64"}, {"week": 10, "team": "samgbb", "w": 1, "ai": "W", "why": "Beat the AI 136.42-120.64"}, {"week": 10, "team": "BigCGapp", "w": 1, "ai": "W", "why": "Beat the AI 135.97-120.64"}, {"week": 10, "team": "JustAPeasant", "l": 1, "ai": "L", "why": "Lost to the AI 116.33-120.64"}, {"week": 10, "team": "yungwillard", "l": 1, "ai": "L", "why": "Lost to the AI 109.37-120.64"}, {"week": 10, "team": "Drizick", "l": 1, "ai": "L", "why": "Lost to the AI 100.58-120.64"}, {"week": 10, "team": "RonDurger", "l": 1, "ai": "L", "why": "Lost to the AI 90.84-120.64"}]};
+const LEDGER = {"note": "ai entries = extra W/L Sleeper can't record. bonus entries = event points owed but not yet entered in Sleeper; the page only applies them for team-weeks where Sleeper has no score adjustment.", "entries": [{"week": 10, "team": "Hutch3", "w": 1, "ai": "W", "why": "Beat the AI 200.16-120.64"}, {"week": 10, "team": "Justang", "w": 1, "ai": "W", "why": "Beat the AI 180.25-120.64"}, {"week": 10, "team": "ZachInBlack", "w": 1, "ai": "W", "why": "Beat the AI 151.61-120.64"}, {"week": 10, "team": "BroganMi", "w": 1, "ai": "W", "why": "Beat the AI 141.01-120.64"}, {"week": 10, "team": "samgbb", "w": 1, "ai": "W", "why": "Beat the AI 136.42-120.64"}, {"week": 10, "team": "BigCGapp", "w": 1, "ai": "W", "why": "Beat the AI 135.97-120.64"}, {"week": 10, "team": "JustAPeasant", "l": 1, "ai": "L", "why": "Lost to the AI 116.33-120.64"}, {"week": 10, "team": "yungwillard", "l": 1, "ai": "L", "why": "Lost to the AI 109.37-120.64"}, {"week": 10, "team": "Drizick", "l": 1, "ai": "L", "why": "Lost to the AI 100.58-120.64"}, {"week": 10, "team": "RonDurger", "l": 1, "ai": "L", "why": "Lost to the AI 90.84-120.64"}, {"week": 7, "team": "ZachInBlack", "bonus": 4, "why": "TE/K Week bonus"}, {"week": 7, "team": "BigCGapp", "bonus": -3, "why": "TE/K Week bonus"}, {"week": 7, "team": "Drizick", "bonus": 2, "why": "TE/K Week bonus"}, {"week": 7, "team": "Justang", "bonus": 8.3, "why": "TE/K Week bonus"}, {"week": 7, "team": "yungwillard", "bonus": 6, "why": "TE/K Week bonus"}, {"week": 8, "team": "BroganMi", "bonus": 3, "why": "Rookie Bonus"}, {"week": 9, "team": "ZachInBlack", "bonus": 3, "why": "Waiver Wire Warriors bonus"}, {"week": 9, "team": "BigCGapp", "bonus": 3, "why": "Waiver Wire Warriors bonus"}, {"week": 9, "team": "Drizick", "bonus": -4, "why": "Waiver Wire Warriors bonus"}, {"week": 9, "team": "Hutch3", "bonus": 3, "why": "Waiver Wire Warriors bonus"}, {"week": 9, "team": "BroganMi", "bonus": 6, "why": "Waiver Wire Warriors bonus"}, {"week": 7, "team": "RonDurger", "w": 1, "ai": "W", "why": "Beat the AI 140.00-73.78"}, {"week": 7, "team": "ZachInBlack", "w": 1, "ai": "W", "why": "Beat the AI 144.43-73.78"}, {"week": 7, "team": "BigCGapp", "w": 1, "ai": "W", "why": "Beat the AI 128.03-73.78"}, {"week": 7, "team": "Drizick", "w": 1, "ai": "W", "why": "Beat the AI 132.45-73.78"}, {"week": 7, "team": "JustAPeasant", "w": 1, "ai": "W", "why": "Beat the AI 101.88-73.78"}, {"week": 7, "team": "Hutch3", "w": 1, "ai": "W", "why": "Beat the AI 107.82-73.78"}, {"week": 7, "team": "Justang", "w": 1, "ai": "W", "why": "Beat the AI 116.36-73.78"}, {"week": 7, "team": "BroganMi", "w": 1, "ai": "W", "why": "Beat the AI 144.57-73.78"}, {"week": 7, "team": "yungwillard", "w": 1, "ai": "W", "why": "Beat the AI 151.17-73.78"}, {"week": 7, "team": "samgbb", "w": 1, "ai": "W", "why": "Beat the AI 165.94-73.78"}]};
 /*END*/
 const A = "https://api.sleeper.app/v1/league/" + LEAGUE;
 async function load() {
   try {
-    const [rs, us, lg] = await Promise.all([A + "/rosters", A + "/users", A].map(u => fetch(u, { cache: "no-store" }).then(r => r.json())));
+    const [rs, us, lg, state] = await Promise.all([A + "/rosters", A + "/users", A, "https://api.sleeper.app/v1/state/nfl"].map(u => fetch(u, { cache: "no-store" }).then(r => r.json())));
+    // Points for = every finished week's score (with Sleeper score adjustments) + owed bonuses not yet entered in Sleeper
+    const last = Math.max(1, (state.week || 1) - 1);
+    const weeks = await Promise.all(Array.from({ length: last }, (_, i) => fetch(A + "/matchups/" + (i + 1), { cache: "no-store" }).then(r => r.json())));
+    const ridName = Object.fromEntries(rs.map(r => [r.roster_id, null]));
+    const pfBy = {}, hasAdj = {};
+    weeks.forEach((ms, i) => (ms || []).forEach(m => {
+      pfBy[m.roster_id] = (pfBy[m.roster_id] || 0) + (m.custom_points != null ? m.custom_points : (m.points || 0));
+      if (m.custom_points != null) hasAdj[m.roster_id + ":" + (i + 1)] = true;
+    }));
     const name = Object.fromEntries(us.map(u => [u.user_id, u.display_name]));
     const teams = rs.map(r => {
       const s = r.settings || {}, n = name[r.owner_id] || ("Team " + r.roster_id);
-      const adj = LEDGER.entries.filter(e => e.team === n);
+      const adj = LEDGER.entries.filter(e => e.team === n && e.ai);
+      const owed = LEDGER.entries.filter(e => e.team === n && e.bonus != null && !hasAdj[r.roster_id + ":" + e.week]).reduce((a, e) => a + e.bonus, 0);
       const aw = adj.reduce((a, e) => a + (e.w || 0), 0), al = adj.reduce((a, e) => a + (e.l || 0), 0);
       return { n, sw: s.wins || 0, sl: s.losses || 0, st: s.ties || 0, aw, al,
-               w: (s.wins || 0) + aw, l: (s.losses || 0) + al, pf: (s.fpts || 0) + (s.fpts_decimal || 0) / 100 };
+               w: (s.wins || 0) + aw, l: (s.losses || 0) + al, owed,
+               pf: (pfBy[r.roster_id] != null ? pfBy[r.roster_id] : (s.fpts || 0) + (s.fpts_decimal || 0) / 100) + owed };
     });
     const by = (a, b) => (b.w - b.l) - (a.w - a.l) || b.pf - a.pf;
     const sleeperRank = Object.fromEntries([...teams].sort((a, b) => (b.sw - b.sl) - (a.sw - a.sl) || b.pf - a.pf).map((t, i) => [t.n, i + 1]));
@@ -75,11 +86,11 @@ async function load() {
       const ai = t.aw || t.al ? `<div class="ai ${t.aw > t.al ? "w" : "l"}">${t.aw}-${t.al}</div>` : `<div class="ai n">–</div>`;
       html += `<div class="row${i === cut - 1 ? " cutline" : ""}"><div class="rk">${i + 1}</div>
         <div class="tm"><div class="n">${t.n}${mv}</div><div class="s">Sleeper ${t.sw}-${t.sl}${t.st ? "-" + t.st : ""}</div></div>
-        <div class="rec">${t.w}-${t.l}${t.st ? "-" + t.st : ""}</div>${ai}<div class="pf">${t.pf.toFixed(1)}</div></div>`;
+        <div class="rec">${t.w}-${t.l}${t.st ? "-" + t.st : ""}</div>${ai}<div class="pf">${t.pf.toFixed(1)}${t.owed ? `<div style="font-size:10px;color:var(--dim)">incl ${t.owed > 0 ? "+" : ""}${+t.owed.toFixed(1)} owed</div>` : ""}</div></div>`;
       if (i === cut - 1) html += `<div class="cutlbl">Playoff line</div>`;
     });
     document.getElementById("table").innerHTML = html;
-    const log = [...LEDGER.entries].sort((a, b) => b.week - a.week || (a.ai === "W" ? -1 : 1));
+    const log = LEDGER.entries.filter(e => e.ai).sort((a, b) => b.week - a.week || (a.ai === "W" ? -1 : 1));
     document.getElementById("log").innerHTML = log.length ? log.map(e =>
       `<div class="row"><div class="rk">Wk ${e.week}</div><div class="tm"><div class="n">${e.team}</div><div class="s">${e.why}</div></div><div class="ai ${e.ai === "W" ? "w" : "l"}">${e.ai === "W" ? "+1 W" : "+1 L"}</div></div>`).join("")
       : `<div class="row"><div></div><div class="tm"><div class="n">No AI games yet</div></div></div>`;
